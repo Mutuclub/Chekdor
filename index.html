@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Checador">
-<title>Checador Arts Nova</title>
+<title>Checador Virtual</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
@@ -328,7 +328,7 @@ table.rep td.firma { min-width: 110px; }
 <!-- ═══ Login ═══ -->
 <div id="vLogin" class="login hidden">
   <div class="login-box">
-    <div class="brand">Checador<br>Arts Nova</div>
+    <div class="brand">Checador<br>Virtual</div>
     <div class="brand-sub">Registra tu entrada y salida desde tu lugar de trabajo.</div>
     <div id="loginMsg" class="msg bad hidden"></div>
     <div class="field">
@@ -1234,7 +1234,7 @@ async function generarReporte() {
 function encabezadoRep(titulo, desde, hasta) {
   return `<div class="rep-title"><div><h2>${titulo}</h2>
     <div class="rep-sub">Del ${fechaLarga(desde).toLowerCase()} al ${fechaLarga(hasta).toLowerCase()} de ${hasta.slice(0, 4)}</div></div>
-    <div class="rep-org">Arts Nova MutuClub<br>Generado el ${fmtFecha(ahora(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div></div>`;
+    <div class="rep-org">Checador Virtual<br>Generado el ${fmtFecha(ahora(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div></div>`;
 }
 
 function celdaSemana(r) {
