@@ -294,14 +294,30 @@ table.rep td.firma { min-width: 110px; }
 .week-nav { display: flex; gap: 6px; align-items: flex-end; }
 .week-nav button { padding: 10px 12px; border: 1.5px solid var(--line); background: var(--card); border-radius: var(--r-sm); font-weight: 700; }
 
+/* ── Aviso de privacidad ───────────────────────────── */
+.aviso h2 { font-size: 20px; margin-bottom: 10px; line-height: 1.25; }
+.aviso h3 { font-size: 15px; margin: 14px 0 3px; }
+.aviso p { font-size: 14.5px; line-height: 1.55; }
+.aviso-scroll { max-height: 58vh; overflow-y: auto; padding-right: 6px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.footer-links { text-align: center; margin-top: 26px; }
+#printArea { display: none; }
+.acuse { margin-top: 22px; }
+.acuse h3 { font-size: 15px; margin-bottom: 4px; }
+.acuse p { font-size: 13px; margin-bottom: 8px; }
+.acuse td { height: 34px; }
+.rep-rs { font-size: 13px; color: var(--muted); margin: -2px 0 6px; }
+
 @media print {
   @page { size: letter landscape; margin: 9mm; }
+  @page vertical { size: letter portrait; margin: 14mm; }
   body { background: #fff; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body > *:not(#printArea) { display: none !important; }
+  #printArea { display: block !important; }
+  .print-aviso { page: vertical; }
+  .print-aviso .aviso p { font-size: 12.5px; line-height: 1.45; }
+  .print-aviso .aviso h3 { font-size: 13.5px; margin-top: 10px; }
   .rep-block + .rep-block { margin-top: 0; }
   table.rep td { height: 30px; }
-  body * { visibility: hidden; }
-  #repOut, #repOut * { visibility: visible; }
-  #repOut { position: absolute; left: 0; top: 0; width: 100%; }
   .rep-doc { border: none; padding: 0; }
   table.rep { font-size: 10.5px; }
   tr { break-inside: avoid; }
@@ -372,6 +388,7 @@ table.rep td.firma { min-width: 110px; }
       <div class="actions" id="actions"></div>
       <div class="section-title">Mis registros</div>
       <div class="history" id="history"><div class="empty">Cargando…</div></div>
+      <div class="footer-links"><button class="link" id="btnAviso">Aviso de privacidad</button></div>
     </section>
 
     <!-- Tablero (admin) -->
@@ -433,6 +450,7 @@ table.rep td.firma { min-width: 110px; }
             <select id="iTipo"><option>Vacaciones</option><option>Permiso</option><option>Incapacidad</option><option>Falta justificada</option><option>Comisión</option><option>Día inhábil</option></select>
           </div>
           <div class="field" id="iEmpBox" style="min-width:220px"><label for="iEmp">Empleado</label><select id="iEmp"></select></div>
+          <div class="field hidden" id="iUbiBox" style="min-width:200px"><label for="iUbi">Aplica en</label><select id="iUbi"></select></div>
           <div class="field"><label for="iDesde">Desde</label><input type="date" id="iDesde"></div>
           <div class="field"><label for="iHasta">Hasta</label><input type="date" id="iHasta"></div>
           <div class="field" style="flex:1;min-width:180px"><label for="iNota">Nota (opcional)</label><input id="iNota"></div>
@@ -474,7 +492,7 @@ table.rep td.firma { min-width: 110px; }
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Número</th><th>Nombre</th><th>Ubicación</th><th class="hide-sm">Horario</th><th>Estado</th><th></th></tr></thead>
+          <thead><tr><th>Número</th><th>Nombre</th><th>Ubicación</th><th class="hide-sm">Horario</th><th class="hide-sm">Aviso</th><th>Estado</th><th></th></tr></thead>
           <tbody id="tbEmp"></tbody>
         </table>
       </div>
@@ -495,6 +513,7 @@ table.rep td.firma { min-width: 110px; }
 
 <div id="modal" class="sheet-bg hidden"><div class="sheet" id="sheet"></div></div>
 <div id="toast" class="toast hidden"></div>
+<div id="printArea"></div>
 
 <script>
 // ════════════════════════════════════════════════════════════
@@ -604,9 +623,12 @@ async function entrarApp() {
   mostrar('vApp');
   $('whoName').textContent = sesion.nombre;
   $('whoNum').textContent = 'Empleado ' + sesion.num;
-  const admin = sesion.rol === 'admin';
+  const admin = sesion.rol === 'admin' || sesion.rol === 'encargado';
   $('adminTabs').classList.toggle('hidden', !admin);
   $('appWrap').classList.toggle('wide', admin);
+  document.querySelectorAll('.tab[data-tab="empleados"], .tab[data-tab="ubicaciones"]')
+    .forEach(t => t.classList.toggle('hidden', sesion.rol !== 'admin'));
+  if (sesion.rol === 'encargado') $('whoNum').textContent = 'Encargado · Empleado ' + sesion.num;
   await cargarEstado();
   if (admin) {
     const conUbi = !!(estado && estado.ubicacion);
@@ -623,6 +645,7 @@ async function cargarEstado() {
     estado = await rpc('ch_estado', { p_token: sesion.token });
     offsetServidor = new Date(estado.servidor).getTime() - Date.now();
     pintarEstado();
+    if (estado.ubicacion && !estado.aviso_aceptado && !avisoObligatorio) mostrarAviso(true);
     cargarHistorial();
   } catch (e) { if (sesion) toast(e.message); }
 }
@@ -882,15 +905,16 @@ async function cargarEmps() {
 function pintarEmps() {
   const q = $('fBuscaEmp').value.trim().toUpperCase();
   const rows = cacheEmps.filter(e => !q || e.nombre.toUpperCase().includes(q) || e.num_empleado.includes(q));
-  if (!rows.length) { $('tbEmp').innerHTML = '<tr><td colspan="6" class="empty">No hay empleados. Agrega el primero con el botón de arriba.</td></tr>'; return; }
+  if (!rows.length) { $('tbEmp').innerHTML = '<tr><td colspan="7" class="empty">No hay empleados. Agrega el primero con el botón de arriba.</td></tr>'; return; }
   $('tbEmp').innerHTML = rows.map(e => {
     const esp = e.hora_entrada ? `${e.hora_entrada}–${e.hora_salida} <span class="pill meal">Especial</span>` : '<span style="color:var(--muted)">El de su ubicación</span>';
     const est = !e.activo ? '<span class="pill gray">Inactivo</span>' : e.bloqueado ? '<span class="pill bad">Bloqueado 15 min</span>' : '<span class="pill ok">Activo</span>';
     return `<tr class="${e.activo ? '' : 'off'}">
       <td class="num">${esc(e.num_empleado)}</td>
-      <td>${esc(e.nombre)}${e.rol === 'admin' ? ' <span class="pill gray">Admin</span>' : ''}</td>
+      <td>${esc(e.nombre)}${e.rol === 'admin' ? ' <span class="pill gray">Admin</span>' : e.rol === 'encargado' ? ' <span class="pill gray">Encargado</span>' : ''}</td>
       <td>${esc(e.ubicacion || 'Sin asignar')}</td>
       <td class="hide-sm">${esp}</td>
+      <td class="hide-sm">${e.aviso ? `<span class="pill ok">Leído ${e.aviso}</span>` : e.id_ubicacion ? '<span class="pill gray">Pendiente</span>' : ''}</td>
       <td>${est}</td>
       <td><button class="link" data-emp="${e.id}">Editar</button></td></tr>`;
   }).join('');
@@ -917,6 +941,7 @@ function formEmp(e) {
         cacheUbis.map(u => `<option value="${u.id}" ${u.id === e.id_ubicacion ? 'selected' : ''}>${esc(u.nombre)}</option>`).join('')}</select></div>
       <div class="field"><label for="eRol">Tipo de acceso</label><select id="eRol">
         <option value="empleado" ${e.rol === 'empleado' ? 'selected' : ''}>Empleado</option>
+        <option value="encargado" ${e.rol === 'encargado' ? 'selected' : ''}>Encargado de su ubicación</option>
         <option value="admin" ${e.rol === 'admin' ? 'selected' : ''}>Administrador</option></select></div>
     </div>
     <label class="check-line"><input type="checkbox" id="eEsp" ${esp ? 'checked' : ''}> Tiene un horario distinto al de su ubicación</label>
@@ -959,15 +984,16 @@ function pintarUbis() {
   if (!cacheUbis.length) { $('tbUbi').innerHTML = '<tr><td colspan="7" class="empty">Aún no hay ubicaciones. Agrega tus 3 lugares de trabajo con el botón de arriba.</td></tr>'; return; }
   $('tbUbi').innerHTML = cacheUbis.map(u => `
     <tr class="${u.activo ? '' : 'off'}">
-      <td><b>${esc(u.nombre)}</b>${u.direccion ? `<br><small style="color:var(--muted)">${esc(u.direccion)}</small>` : ''}</td>
+      <td><b>${esc(u.nombre)}</b><br><small style="color:var(--muted)">${u.razon_social ? esc(u.razon_social) : '<span style="color:var(--bad)">Falta razón social</span>'}</small></td>
       <td class="num">${u.hora_entrada}–${u.hora_salida}${u.comida_min ? `<br><small style="color:var(--muted)">${u.comida_min} min comida</small>` : ''}</td>
       <td class="hide-sm">${diasTexto(u.dias)}</td>
       <td class="num">${u.radio_m} m</td>
       <td class="num">${u.empleados}</td>
       <td>${u.lat != null ? `<a class="link" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${u.lat},${u.lng}">Ver en mapa</a>` : '<span class="pill bad">Sin coordenadas</span>'}</td>
-      <td><button class="link" data-ubi="${u.id}">Editar</button></td>
+      <td style="white-space:nowrap"><button class="link" data-ubi="${u.id}">Editar</button> <button class="link" data-aviso="${u.id}">Imprimir aviso</button></td>
     </tr>`).join('');
   $('tbUbi').querySelectorAll('[data-ubi]').forEach(b => b.onclick = () => formUbi(cacheUbis.find(x => x.id === +b.dataset.ubi)));
+  $('tbUbi').querySelectorAll('[data-aviso]').forEach(b => b.onclick = () => imprimirAviso(+b.dataset.aviso));
 }
 
 function formUbi(u) {
@@ -975,7 +1001,9 @@ function formUbi(u) {
   abrirModal(`<h2>${nuevo ? 'Agregar ubicación' : 'Editar ubicación'}</h2><p class="sub">Los empleados solo podrán checar dentro del radio que indiques.</p>
     <div id="uMsg" class="msg bad hidden"></div>
     <div class="field"><label for="uNom">Nombre</label><input id="uNom" value="${esc(u.nombre || '')}" placeholder="Ej. Oficina Huerta Baeza"></div>
-    <div class="field"><label for="uDir">Dirección (opcional)</label><input id="uDir" value="${esc(u.direccion || '')}"></div>
+    <div class="field"><label for="uRs">Razón social de la empresa</label><input id="uRs" value="${esc(u.razon_social || '')}" placeholder="Ej. Servicios Centro, S.A. de C.V."><small>Aparece en el reporte semanal y en el aviso de privacidad.</small></div>
+    <div class="field"><label for="uDir">Domicilio</label><input id="uDir" value="${esc(u.direccion || '')}"></div>
+    <div class="field"><label for="uCt">Contacto para temas de privacidad</label><input id="uCt" value="${esc(u.contacto_privacidad || '')}" placeholder="Correo o teléfono de Recursos Humanos"><small>Donde los empleados pueden ejercer sus derechos sobre sus datos.</small></div>
     <div class="hint">Para las coordenadas, lo más fácil es estar físicamente en el lugar y tocar <b>Usar mi ubicación actual</b>. También puedes copiarlas de Google Maps: mantén presionado el punto y copia los dos números.</div>
     <div class="form-grid">
       <div class="field"><label for="uLat">Latitud</label><input id="uLat" inputmode="decimal" value="${u.lat ?? ''}" placeholder="20.6597"></div>
@@ -1007,6 +1035,7 @@ function formUbi(u) {
     if (!leerDias('uDias')) { mostrarErr('uMsg', 'Marca al menos un día laboral.'); return; }
     const p = {
       id: u.id || '', nombre: $('uNom').value, direccion: $('uDir').value, lat, lng,
+      razon_social: $('uRs').value, contacto_privacidad: $('uCt').value,
       radio_m: $('uRad').value, comida_min: $('uCom').value, hora_entrada: $('uHe').value, hora_salida: $('uHs').value,
       tolerancia_min: $('uTol').value, dias: leerDias('uDias'), activo: $('uAct').checked
     };
@@ -1036,7 +1065,7 @@ function analizar(D, desde, hasta, filtroUbi) {
   const fin = hasta > hoy ? hoy : hasta;
   const chk = {};
   D.checadas.forEach(c => { const k = c.e + '|' + c.f; chk[k] = chk[k] || {}; if (!chk[k][c.t]) chk[k][c.t] = c; });
-  const inc = {}; D.incidencias.forEach(i => { inc[(i.e || 0) + '|' + i.f] = i; });
+  const inc = {}; D.incidencias.forEach(i => { inc[(i.e ? i.e : i.u ? 'u' + i.u : 0) + '|' + i.f] = i; });
   const rech = {}; D.rechazos.forEach(r => { rech[r.e] = (rech[r.e] || 0) + 1; });
   const conChk = new Set(D.checadas.map(c => c.e));
   const emps = D.empleados.filter(e =>
@@ -1053,7 +1082,7 @@ function analizar(D, desde, hasta, filtroUbi) {
     } : null;
     for (const f of fechas) {
       const c = chk[e.id + '|' + f] || {};
-      const incG = inc['0|' + f], incE = inc[e.id + '|' + f];
+      const incG = inc['0|' + f] || inc['u' + e.id_ubicacion + '|' + f], incE = inc[e.id + '|' + f];
       const r = { e, u, f, hor, ent: c.ENTRADA?.h, sc: c.SALIDA_COMIDA?.h, rc: c.REGRESO_COMIDA?.h, sal: c.SALIDA?.h,
                   manual: Object.values(c).some(x => x.m) };
       const labBase = !!hor && hor.dias.includes(String(isoDow(f))) && f >= e.alta;
@@ -1269,6 +1298,7 @@ function repSemanal(A, D, desde, hasta) {
       <td class="r">${hmm(s.trab) || '0:00'}</td><td class="firma"></td></tr>`).join('');
     return `<div class="rep-block">${encabezadoRep('Reporte semanal de asistencia', desde, hasta)}
       <div class="rep-loc">${esc(u ? u.nombre : 'Sin ubicación')} ${u ? `<span>· Horario ${u.hora_entrada}–${u.hora_salida}, tolerancia ${u.tolerancia_min} min${u.comida_min ? ', comida ' + u.comida_min + ' min' : ''}</span>` : ''}</div>
+      ${u && u.razon_social ? `<div class="rep-rs">${esc(u.razon_social)}</div>` : ''}
       <div class="table-wrap" style="border:none;border-radius:0"><table class="rep"><thead><tr><th style="text-align:left">Empleado</th>
       ${fechas.map(f => `<th>${DIAS[isoDow(f)]} ${+f.slice(8)}</th>`).join('')}
       <th>Asist.</th><th>Faltas</th><th>Retardos</th><th>Horas</th><th>Firma</th></tr></thead><tbody>${filas}</tbody></table></div>
@@ -1310,6 +1340,7 @@ function repDetalle(A, desde, hasta) {
 
 function imprimirReporte() {
   if (!repActual) { toast('Primero genera un reporte.'); return; }
+  $('printArea').innerHTML = $('repOut').innerHTML;
   window.print();
 }
 
@@ -1358,6 +1389,8 @@ async function cargarIncidencias() {
   const hoy = hoyISO();
   if (!$('iDesde').value) { $('iDesde').value = hoy; $('iHasta').value = hoy; }
   if (!cacheEmps.length) { try { cacheEmps = await rpc('ch_admin_empleados', { p_token: sesion.token }); } catch {} }
+  if (!cacheUbis.length) await cargarUbis();
+  $('iUbi').innerHTML = '<option value="">Todas las ubicaciones</option>' + cacheUbis.map(u => `<option value="${u.id}">${esc(u.nombre)}</option>`).join('');
   $('iEmp').innerHTML = '<option value="">Elige al empleado</option>' + cacheEmps.filter(e => e.activo && e.id_ubicacion)
     .map(e => `<option value="${e.id}">${esc(e.nombre)} (${esc(e.num_empleado)})</option>`).join('');
   ajustarInc();
@@ -1377,13 +1410,17 @@ async function cargarIncidencias() {
     });
   } catch (e) { $('tbInc').innerHTML = `<tr><td colspan="5" class="empty">${esc(e.message)}</td></tr>`; }
 }
-function ajustarInc() { $('iEmpBox').classList.toggle('hidden', $('iTipo').value === 'Día inhábil'); }
+function ajustarInc() {
+  const inh = $('iTipo').value === 'Día inhábil';
+  $('iEmpBox').classList.toggle('hidden', inh);
+  $('iUbiBox').classList.toggle('hidden', !inh || sesion.rol !== 'admin');
+}
 async function guardarIncidencia() {
   $('iMsg').classList.add('hidden');
   const b = $('iGuardar'); b.disabled = true;
   try {
     const r = await rpc('ch_admin_guardar_incidencia', { p_token: sesion.token, p: {
-      tipo: $('iTipo').value, id_empleado: $('iEmp').value, desde: $('iDesde').value, hasta: $('iHasta').value, nota: $('iNota').value } });
+      tipo: $('iTipo').value, id_empleado: $('iEmp').value, id_ubicacion: $('iUbi').value, desde: $('iDesde').value, hasta: $('iHasta').value, nota: $('iNota').value } });
     if (!r.ok) { mostrarErr('iMsg', r.error); return; }
     toast(`Incidencia registrada (${r.dias} día${r.dias === 1 ? '' : 's'})`); $('iNota').value = ''; cargarIncidencias();
   } catch (e) { mostrarErr('iMsg', e.message); } finally { b.disabled = false; }
@@ -1429,6 +1466,69 @@ function formAnular(id) {
 }
 
 // ════════════════════════════════════════════════════════════
+//  Aviso de privacidad
+// ════════════════════════════════════════════════════════════
+function avisoHTML(u) {
+  const rs = u && u.razon_social ? esc(u.razon_social) : '[RAZÓN SOCIAL]';
+  const dom = u && u.direccion ? esc(u.direccion) : '[DOMICILIO]';
+  const ct = u && u.contacto_privacidad ? esc(u.contacto_privacidad) : '[CORREO O TELÉFONO DE CONTACTO]';
+  return `<div class="aviso">
+    <h2>Aviso de privacidad para el registro de asistencia</h2>
+    <p><b>${rs}</b>, con domicilio en ${dom}, es responsable del tratamiento de los datos personales que se recaban por medio del Checador Virtual.</p>
+    <h3>Qué datos se recaban</h3>
+    <p>Tu nombre y número de empleado; la fecha y hora de cada registro; una fotografía tomada al momento de registrar; la ubicación del celular al momento de registrar, y datos técnicos básicos del navegador que usas.</p>
+    <h3>Cuándo se obtiene tu ubicación</h3>
+    <p>Tu ubicación se consulta <b>únicamente en el momento en que tocas el botón para registrar</b> un movimiento, mientras la aplicación está abierta. La aplicación no rastrea tu ubicación de forma continua, ni fuera de tu horario, ni cuando está cerrada.</p>
+    <h3>Para qué se usan</h3>
+    <p>Para verificar tu asistencia y puntualidad en tu lugar de trabajo, confirmar que el registro lo hiciste tú, calcular retardos, incidencias y horas trabajadas, y como soporte para la nómina y el cumplimiento de obligaciones laborales.</p>
+    <h3>Qué no se hace con tus datos</h3>
+    <p>La fotografía no se usa para reconocimiento facial ni para otro fin distinto al control de asistencia. Tus datos no se venden ni se transfieren a terceros, salvo cuando lo requiera una autoridad competente o la ley.</p>
+    <h3>Quién tiene acceso y cuánto tiempo se conservan</h3>
+    <p>Solo el personal autorizado de administración y el encargado de tu ubicación. Las fotografías se eliminan automáticamente a los 90 días. Los registros de fecha, hora y ubicación se conservan durante la relación laboral y el tiempo que exija la legislación aplicable.</p>
+    <h3>Tus derechos</h3>
+    <p>Puedes solicitar el acceso, rectificación, cancelación u oposición al tratamiento de tus datos (derechos ARCO) y, cuando proceda, revocar tu consentimiento, escribiendo a <b>${ct}</b>. Tu solicitud se atenderá en los plazos que establece la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
+    <h3>Cambios a este aviso</h3>
+    <p>Cualquier cambio a este aviso se te dará a conocer a través de la propia aplicación.</p>
+  </div>`;
+}
+
+let avisoObligatorio = false;
+function mostrarAviso(obligatorio) {
+  avisoObligatorio = obligatorio;
+  abrirModal(`<div class="aviso-scroll">${avisoHTML(estado && estado.ubicacion)}</div>
+    ${obligatorio ? `<div id="avMsg" class="msg bad hidden"></div>
+      <p class="sub" style="margin:14px 0 12px">Para usar el checador, confirma que leíste este aviso.</p>
+      <button class="btn-main" id="avOk">He leído el aviso de privacidad</button>`
+    : '<button class="btn-sec" id="avCerrar" style="margin-top:16px">Cerrar</button>'}`);
+  if (obligatorio) {
+    $('avOk').onclick = async () => {
+      $('avOk').disabled = true;
+      try { await rpc('ch_aceptar_aviso', { p_token: sesion.token }); avisoObligatorio = false; cerrarModal(); estado.aviso_aceptado = true; }
+      catch (e) { mostrarErr('avMsg', e.message); $('avOk').disabled = false; }
+    };
+  } else $('avCerrar').onclick = cerrarModal;
+}
+
+async function imprimirAviso(idUbi) {
+  const u = cacheUbis.find(x => x.id === idUbi);
+  let emps = [];
+  try { emps = (await rpc('ch_admin_empleados', { p_token: sesion.token })).filter(e => e.id_ubicacion === idUbi && e.activo); }
+  catch (e) { toast(e.message); return; }
+  const faltan = [!u.razon_social && 'razón social', !u.direccion && 'dirección', !u.contacto_privacidad && 'contacto de privacidad'].filter(Boolean);
+  if (faltan.length && !confirm(`A esta ubicación le falta: ${faltan.join(', ')}. El aviso saldrá con espacios en blanco para llenar a mano. ¿Imprimir de todos modos?`)) return;
+  const filas = (emps.length ? emps : Array.from({ length: 12 }, () => ({ nombre: '', num_empleado: '' })))
+    .map(e => `<tr><td>${esc(e.nombre)}</td><td class="c">${esc(e.num_empleado)}</td><td></td><td></td></tr>`).join('');
+  $('printArea').innerHTML = `<div class="print-aviso">
+    ${avisoHTML(u)}
+    <div class="acuse">
+      <h3>Acuse de recibo · ${esc(u.nombre)}</h3>
+      <p>Con mi firma hago constar que recibí y leí el presente aviso de privacidad.</p>
+      <table class="rep"><thead><tr><th style="text-align:left">Nombre</th><th>Número</th><th>Firma</th><th>Fecha</th></tr></thead><tbody>${filas}</tbody></table>
+    </div></div>`;
+  window.print();
+}
+
+// ════════════════════════════════════════════════════════════
 //  Eventos
 // ════════════════════════════════════════════════════════════
 $('btnLogin').onclick = login;
@@ -1450,7 +1550,8 @@ $('rPrev').onclick = () => { $('rSemana').value = addDias(lunesDe($('rSemana').v
 $('rNext').onclick = () => { $('rSemana').value = addDias(lunesDe($('rSemana').value || hoyISO()), 7); generarReporte(); };
 $('iTipo').onchange = ajustarInc;
 $('iGuardar').onclick = guardarIncidencia;
-$('modal').addEventListener('click', e => { if (e.target.id === 'modal' && !(flujo && flujo.tipo)) cerrarModal(); });
+$('modal').addEventListener('click', e => { if (e.target.id === 'modal' && !(flujo && flujo.tipo) && !avisoObligatorio) cerrarModal(); });
+$('btnAviso').onclick = () => mostrarAviso(false);
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && sesion && !$('tChecar').classList.contains('hidden') && !flujo) cargarEstado();
 });
