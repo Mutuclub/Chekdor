@@ -233,6 +233,82 @@ tr.off td { color: var(--muted); }
 .setup { max-width: 520px; margin: 60px auto; padding: 24px; background: var(--card); border-radius: var(--r-lg); border: 1px solid var(--line); }
 .setup h1 { font-size: 22px; margin-bottom: 10px; }
 .setup p { margin-bottom: 10px; }
+/* ── Tablero ────────────────────────────────────────── */
+.dash-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+.dash-head h2 { font-size: 24px; letter-spacing: -0.01em; }
+.dash-head span { color: var(--muted); font-size: 14px; }
+.loc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.loc { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 16px 18px; }
+.loc h3 { font-size: 17px; }
+.loc .sched { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+.loc .big { font-size: 44px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.loc .big small { font-size: 18px; color: var(--muted); font-weight: 400; }
+.loc .big-l { color: var(--muted); font-size: 14px; margin: 4px 0 12px; }
+.meter { height: 8px; background: var(--paper); border-radius: 99px; overflow: hidden; display: flex; margin-bottom: 12px; }
+.meter i { display: block; height: 100%; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; }
+.stats b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; }
+.stats span { font-size: 12px; color: var(--muted); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 26px; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 14px 16px; }
+.panel h3 { font-size: 16px; margin-bottom: 8px; }
+.plist { list-style: none; }
+.plist li { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.plist li:first-child { border-top: none; }
+.plist li span { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px 14px; }
+.kpi b { display: block; font-size: 26px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.kpi span { font-size: 13px; color: var(--muted); }
+.chart { display: flex; align-items: flex-end; gap: 4px; height: 170px; padding: 8px 4px 0; overflow-x: auto; }
+.bar { flex: 1 0 24px; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; height: 100%; }
+.bar i { display: block; width: 100%; }
+.bar i:first-child { border-radius: 3px 3px 0 0; }
+.bar em { font-style: normal; font-size: 10px; color: var(--muted); text-align: center; margin-top: 4px; white-space: nowrap; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.c-ok { background: #3D8F6A; } .c-late { background: #D29A2E; } .c-miss { background: #B3372F; } .c-inc { background: #8C9AB0; }
+@media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ── Reportes ───────────────────────────────────────── */
+.rep-doc { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 22px; }
+.rep-title { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 14px; }
+.rep-title h2 { font-size: 20px; color: var(--ink); }
+.rep-sub { font-size: 13px; color: var(--muted); }
+.rep-org { font-size: 13px; color: var(--muted); text-align: right; }
+.rep-block + .rep-block { margin-top: 34px; }
+.rep-loc { font-size: 16px; font-weight: 700; margin: 18px 0 6px; }
+.rep-loc span { font-weight: 400; color: var(--muted); font-size: 13px; }
+table.rep { font-size: 12.5px; border: 1px solid var(--line); }
+table.rep th, table.rep td { padding: 5px 6px; border: 1px solid var(--line); }
+table.rep th { background: var(--paper); color: var(--ink); font-size: 11.5px; text-align: center; }
+table.rep td.c { text-align: center; }
+table.rep td.r { text-align: right; font-variant-numeric: tabular-nums; }
+table.rep td.firma { min-width: 110px; }
+.tag { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 0 4px; border-radius: 3px; margin-top: 2px; }
+.tag.late { background: var(--meal-bg); color: var(--meal); }
+.tag.miss { background: var(--bad-bg); color: var(--bad); }
+.tag.inc { background: var(--paper); color: var(--muted); }
+.tag.warn { background: #FFF3C4; color: #7A5A00; }
+.rep-legend { font-size: 11.5px; color: var(--muted); margin-top: 12px; }
+.week-nav { display: flex; gap: 6px; align-items: flex-end; }
+.week-nav button { padding: 10px 12px; border: 1.5px solid var(--line); background: var(--card); border-radius: var(--r-sm); font-weight: 700; }
+
+@media print {
+  @page { size: letter landscape; margin: 9mm; }
+  body { background: #fff; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .rep-block + .rep-block { margin-top: 0; }
+  table.rep td { height: 30px; }
+  body * { visibility: hidden; }
+  #repOut, #repOut * { visibility: visible; }
+  #repOut { position: absolute; left: 0; top: 0; width: 100%; }
+  .rep-doc { border: none; padding: 0; }
+  table.rep { font-size: 10.5px; }
+  tr { break-inside: avoid; }
+  .rep-block { break-after: page; }
+  .rep-block:last-child { break-after: auto; }
+}
+
 @media (max-width: 560px) {
   .form-grid { grid-template-columns: 1fr; }
   .hide-sm { display: none; }
@@ -276,8 +352,11 @@ tr.off td { color: var(--muted); }
     </div>
 
     <nav class="tabs hidden" id="adminTabs">
+      <button class="tab" data-tab="tablero">Tablero</button>
       <button class="tab" data-tab="checar">Checar</button>
       <button class="tab" data-tab="hoy">Registros</button>
+      <button class="tab" data-tab="reportes">Reportes</button>
+      <button class="tab" data-tab="incidencias">Incidencias</button>
       <button class="tab" data-tab="empleados">Empleados</button>
       <button class="tab" data-tab="ubicaciones">Ubicaciones</button>
     </nav>
@@ -295,6 +374,77 @@ tr.off td { color: var(--muted); }
       <div class="history" id="history"><div class="empty">Cargando…</div></div>
     </section>
 
+    <!-- Tablero (admin) -->
+    <section id="tTab" class="hidden">
+      <div class="dash-head"><h2 id="dashHoy">Hoy</h2><span id="dashAct"></span></div>
+      <div class="loc-grid" id="dashLocs"></div>
+      <div class="two-col">
+        <div class="panel"><h3>Sin llegar</h3><ul class="plist" id="dashSin"></ul></div>
+        <div class="panel"><h3>Retardos de hoy</h3><ul class="plist" id="dashRet"></ul></div>
+      </div>
+      <div class="dash-head"><h2>Últimas 4 semanas</h2><span id="dashRango"></span></div>
+      <div class="kpis" id="dashKpis"></div>
+      <div class="panel" style="margin-bottom:14px">
+        <h3>Asistencia por día</h3>
+        <div class="chart" id="dashChart"></div>
+        <div class="legend"><span><i class="c-ok"></i>A tiempo</span><span><i class="c-late"></i>Con retardo</span><span><i class="c-miss"></i>Falta</span><span><i class="c-inc"></i>Incidencia</span></div>
+      </div>
+      <div class="panel">
+        <h3>Requieren atención</h3>
+        <div class="table-wrap" style="border:none">
+          <table><thead><tr><th>Empleado</th><th class="hide-sm">Ubicación</th><th>Faltas</th><th>Retardos</th><th class="hide-sm">Min. de retardo</th><th>Incompletos</th><th>Asistencia</th></tr></thead>
+          <tbody id="dashAtn"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reportes (admin) -->
+    <section id="tRep" class="hidden">
+      <div class="toolbar">
+        <div class="field"><label for="rTipo">Reporte</label>
+          <select id="rTipo">
+            <option value="semanal">Semanal (para firma)</option>
+            <option value="resumen">Resumen por empleado</option>
+            <option value="detalle">Detalle diario</option>
+          </select>
+        </div>
+        <div class="week-nav" id="rSemanaBox">
+          <button id="rPrev" aria-label="Semana anterior">‹</button>
+          <div class="field"><label for="rSemana">Semana que incluye</label><input type="date" id="rSemana"></div>
+          <button id="rNext" aria-label="Semana siguiente">›</button>
+        </div>
+        <div class="field hidden" id="rDesdeBox"><label for="rDesde">Desde</label><input type="date" id="rDesde"></div>
+        <div class="field hidden" id="rHastaBox"><label for="rHasta">Hasta</label><input type="date" id="rHasta"></div>
+        <div class="field"><label for="rUbi">Ubicación</label><select id="rUbi"><option value="">Todas</option></select></div>
+        <button class="btn-add" id="rGenerar">Generar</button>
+        <button class="btn-text" id="rImprimir">Imprimir</button>
+        <button class="btn-text" id="rExcel">Exportar a Excel</button>
+      </div>
+      <div id="repOut"><div class="empty">Elige el reporte y el periodo, y da clic en Generar.</div></div>
+    </section>
+
+    <!-- Incidencias (admin) -->
+    <section id="tInc" class="hidden">
+      <div class="hint">Registra aquí vacaciones, permisos, incapacidades y días inhábiles para que no cuenten como faltas en los reportes.</div>
+      <div class="panel" style="margin-bottom:16px">
+        <div id="iMsg" class="msg bad hidden"></div>
+        <div class="toolbar" style="margin:0">
+          <div class="field"><label for="iTipo">Tipo</label>
+            <select id="iTipo"><option>Vacaciones</option><option>Permiso</option><option>Incapacidad</option><option>Falta justificada</option><option>Comisión</option><option>Día inhábil</option></select>
+          </div>
+          <div class="field" id="iEmpBox" style="min-width:220px"><label for="iEmp">Empleado</label><select id="iEmp"></select></div>
+          <div class="field"><label for="iDesde">Desde</label><input type="date" id="iDesde"></div>
+          <div class="field"><label for="iHasta">Hasta</label><input type="date" id="iHasta"></div>
+          <div class="field" style="flex:1;min-width:180px"><label for="iNota">Nota (opcional)</label><input id="iNota"></div>
+          <button class="btn-add" id="iGuardar">Registrar</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Fecha</th><th>Tipo</th><th>Empleado</th><th class="hide-sm">Nota</th><th></th></tr></thead>
+        <tbody id="tbInc"></tbody></table>
+      </div>
+    </section>
+
     <!-- Registros (admin) -->
     <section id="tHoy" class="hidden">
       <div class="toolbar">
@@ -305,6 +455,7 @@ tr.off td { color: var(--muted); }
           <select id="fVer"><option value="todas">Todas</option><option value="ok">Solo aceptadas</option><option value="rej">Solo rechazadas</option></select>
         </div>
         <button class="btn-add" id="btnFiltrar">Actualizar</button>
+        <button class="btn-text" id="btnManual">Captura manual</button>
       </div>
       <div class="counts" id="counts"></div>
       <div class="table-wrap">
@@ -460,7 +611,7 @@ async function entrarApp() {
   if (admin) {
     const conUbi = !!(estado && estado.ubicacion);
     document.querySelector('.tab[data-tab="checar"]').classList.toggle('hidden', !conUbi);
-    irTab(conUbi ? 'checar' : 'hoy');
+    irTab('tablero');
   }
 }
 
@@ -642,9 +793,16 @@ async function enviar() {
 function irTab(t) {
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
   $('tChecar').classList.toggle('hidden', t !== 'checar');
+  $('tTab').classList.toggle('hidden', t !== 'tablero');
   $('tHoy').classList.toggle('hidden', t !== 'hoy');
+  $('tRep').classList.toggle('hidden', t !== 'reportes');
+  $('tInc').classList.toggle('hidden', t !== 'incidencias');
   $('tEmp').classList.toggle('hidden', t !== 'empleados');
   $('tUbi').classList.toggle('hidden', t !== 'ubicaciones');
+  clearInterval(dashTimer);
+  if (t === 'tablero') { cargarTablero(); dashTimer = setInterval(() => { if (document.visibilityState === 'visible') cargarTablero(); }, 120000); }
+  if (t === 'reportes') cargarUbis().then(prepararReportes);
+  if (t === 'incidencias') cargarIncidencias();
   if (t === 'checar') cargarEstado();
   if (t === 'hoy') { if (!$('fDesde').value) { $('fDesde').value = $('fHasta').value = hoyISO(); } cargarUbis().then(cargarRegistros); }
   if (t === 'empleados') cargarUbis().then(cargarEmps);
@@ -679,7 +837,7 @@ function pintarRegistros() {
   const rows = cacheRegs.filter(r => ver === 'todas' || (ver === 'ok' ? r.aceptada : !r.aceptada));
   const ok = cacheRegs.filter(r => r.aceptada);
   const personas = new Set(ok.filter(r => r.tipo === 'ENTRADA').map(r => r.num + r.fecha));
-  const rech = cacheRegs.length - ok.length;
+  const rech = cacheRegs.filter(r => !r.aceptada && !(r.motivo || '').startsWith('Anulada')).length;
   $('counts').innerHTML = `
     <span class="count"><b>${personas.size}</b> entradas registradas</span>
     <span class="count"><b>${ok.length}</b> movimientos aceptados</span>
@@ -693,13 +851,16 @@ function pintarRegistros() {
       <td class="hide-sm">${esc(r.ubicacion || '')}</td>
       <td><span class="pill ${TIPOS[r.tipo].cls === 'meal' ? 'meal' : 'gray'}">${TIPOS[r.tipo].txt}</span></td>
       <td class="num">${r.distancia_m ?? '—'} m<br><small style="color:var(--muted)">±${r.precision_m ?? '?'} m</small></td>
-      <td>${r.aceptada ? '<span class="pill ok">Aceptada</span>' : `<span class="pill bad">${esc(r.motivo || 'Rechazada')}</span>`}</td>
+      <td>${r.aceptada ? (r.motivo ? `<span class="pill meal" title="${esc(r.motivo)}">Manual</span>` : '<span class="pill ok">Aceptada</span>')
+        : `<span class="pill bad" title="${esc(r.motivo || '')}">${esc((r.motivo || 'Rechazada').startsWith('Anulada') ? 'Anulada' : (r.motivo || 'Rechazada'))}</span>`}</td>
       <td style="white-space:nowrap">
+        ${r.aceptada ? `<button class="link" data-anular="${r.id}">Anular</button> ` : ''}
         ${r.foto ? `<button class="link" data-foto="${r.id}">Foto</button> ` : ''}
         ${r.lat != null ? `<a class="link" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${r.lat},${r.lng}">Mapa</a>` : ''}
       </td>
     </tr>`).join('');
   $('tbHoy').querySelectorAll('[data-foto]').forEach(b => b.onclick = () => verFoto(+b.dataset.foto));
+  $('tbHoy').querySelectorAll('[data-anular]').forEach(b => b.onclick = () => formAnular(+b.dataset.anular));
 }
 
 async function verFoto(id) {
@@ -854,6 +1015,420 @@ function formUbi(u) {
 }
 
 // ════════════════════════════════════════════════════════════
+//  Motor de análisis (tablero y reportes)
+// ════════════════════════════════════════════════════════════
+const toMin = h => { if (!h) return null; const [a, b] = h.split(':').map(Number); return a * 60 + b; };
+const hmm = m => m == null ? '' : `${Math.floor(m / 60)}:${String(Math.round(m % 60)).padStart(2, '0')}`;
+function addDias(iso, n) { const [y, m, d] = iso.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); }
+function isoDow(iso) { const [y, m, d] = iso.split('-').map(Number); const w = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); return w === 0 ? 7 : w; }
+function lunesDe(iso) { return addDias(iso, 1 - isoDow(iso)); }
+function rangoFechas(a, b) { const o = []; for (let d = a; d <= b; d = addDias(d, 1)) o.push(d); return o; }
+const pct = (a, b) => b ? Math.round(a / b * 100) + '%' : '—';
+const INC_CORTO = { 'Vacaciones': 'VAC', 'Permiso': 'PER', 'Incapacidad': 'INC', 'Falta justificada': 'FJ', 'Comisión': 'COM', 'Día inhábil': 'INH' };
+
+async function traerDatos(desde, hasta) {
+  return rpc('ch_admin_datos', { p_token: sesion.token, p_desde: desde, p_hasta: hasta });
+}
+
+function analizar(D, desde, hasta, filtroUbi) {
+  const ubis = Object.fromEntries(D.ubicaciones.map(u => [u.id, u]));
+  const hoy = D.hoy, ahoraM = toMin(D.ahora);
+  const fin = hasta > hoy ? hoy : hasta;
+  const chk = {};
+  D.checadas.forEach(c => { const k = c.e + '|' + c.f; chk[k] = chk[k] || {}; if (!chk[k][c.t]) chk[k][c.t] = c; });
+  const inc = {}; D.incidencias.forEach(i => { inc[(i.e || 0) + '|' + i.f] = i; });
+  const rech = {}; D.rechazos.forEach(r => { rech[r.e] = (rech[r.e] || 0) + 1; });
+  const conChk = new Set(D.checadas.map(c => c.e));
+  const emps = D.empleados.filter(e =>
+    (e.id_ubicacion || conChk.has(e.id)) && (e.activo || conChk.has(e.id)) &&
+    (!filtroUbi || e.id_ubicacion === +filtroUbi));
+  const fechas = desde <= fin ? rangoFechas(desde, fin) : [];
+  const filas = [];
+  for (const e of emps) {
+    const u = ubis[e.id_ubicacion];
+    const hor = u ? {
+      ent: toMin(e.hora_entrada || u.hora_entrada), sal: toMin(e.hora_salida || u.hora_salida),
+      dias: ((e.hora_entrada && e.dias) || u.dias || '').split(','), tol: u.tolerancia_min || 0, com: u.comida_min || 0,
+      txt: `${e.hora_entrada || u.hora_entrada}–${e.hora_salida || u.hora_salida}`
+    } : null;
+    for (const f of fechas) {
+      const c = chk[e.id + '|' + f] || {};
+      const incG = inc['0|' + f], incE = inc[e.id + '|' + f];
+      const r = { e, u, f, hor, ent: c.ENTRADA?.h, sc: c.SALIDA_COMIDA?.h, rc: c.REGRESO_COMIDA?.h, sal: c.SALIDA?.h,
+                  manual: Object.values(c).some(x => x.m) };
+      const labBase = !!hor && hor.dias.includes(String(isoDow(f))) && f >= e.alta;
+      const incidencia = incG && labBase ? incG : incE;
+      r.laborable = labBase && !incidencia;
+      r.inc = incidencia ? incidencia.tipo : null;
+      const E = toMin(r.ent), S = toMin(r.sal), SC = toMin(r.sc), RC = toMin(r.rc);
+      if (E != null && S != null && S > E) { r.comida = (SC != null && RC != null && RC > SC) ? RC - SC : 0; r.trab = S - E - r.comida; }
+      const cerrado = f < hoy || (hor && ahoraM > hor.sal + 60);
+      if (r.ent) {
+        if (r.laborable) {
+          r.retardo = E > hor.ent + hor.tol ? E - hor.ent : 0;
+          r.estado = r.retardo ? 'Retardo' : 'A tiempo';
+          if (S != null && S < hor.sal) r.anticipada = hor.sal - S;
+          if (hor.com && r.comida > hor.com + 5) r.comidaExc = r.comida - hor.com;
+        } else r.estado = r.inc || 'Día extra';
+        if (cerrado && (!r.sal || (r.sc && !r.rc))) r.incompleta = true;
+      } else if (r.inc) r.estado = r.inc;
+      else if (!r.laborable) r.estado = 'Descanso';
+      else if (f < hoy || ahoraM > hor.sal) r.estado = 'Falta';
+      else if (ahoraM > hor.ent + hor.tol) r.estado = 'Sin llegar';
+      else r.estado = 'Pendiente';
+      filas.push(r);
+    }
+  }
+  return { filas, emps, fechas, hoy, ahoraM, rech, ubis };
+}
+
+function resumir(A) {
+  const m = new Map();
+  for (const e of A.emps) m.set(e.id, { e, u: A.ubis[e.id_ubicacion], lab: 0, asis: 0, falt: 0, inc: 0, ret: 0, minRet: 0,
+    antic: 0, incomp: 0, trab: 0, diasTrab: 0, extra: 0, comExc: 0, manual: 0, rech: A.rech[e.id] || 0 });
+  for (const r of A.filas) {
+    const s = m.get(r.e.id);
+    if (r.laborable && r.estado !== 'Pendiente' && r.estado !== 'Sin llegar') s.lab++;
+    if (r.laborable && r.ent) s.asis++;
+    if (r.estado === 'Falta') s.falt++;
+    if (r.inc && r.inc !== 'Día inhábil') s.inc++;
+    if (r.retardo) { s.ret++; s.minRet += r.retardo; }
+    if (r.anticipada) s.antic++;
+    if (r.incompleta) s.incomp++;
+    if (r.trab) { s.trab += r.trab; s.diasTrab++; }
+    if (r.estado === 'Día extra') s.extra++;
+    if (r.comidaExc) s.comExc++;
+    if (r.manual) s.manual++;
+  }
+  return [...m.values()];
+}
+
+// ════════════════════════════════════════════════════════════
+//  Tablero
+// ════════════════════════════════════════════════════════════
+let dashTimer = null;
+async function cargarTablero() {
+  const hoy = hoyISO(), desde = addDias(hoy, -27);
+  $('dashAct').textContent = 'Cargando…';
+  try {
+    const D = await traerDatos(desde, hoy);
+    const A = analizar(D, desde, hoy);
+    pintarHoy(A, D);
+    pintarPeriodo(A, desde, hoy);
+    $('dashAct').textContent = 'Actualizado a las ' + D.ahora;
+  } catch (e) { $('dashAct').textContent = e.message; }
+}
+
+function pintarHoy(A, D) {
+  $('dashHoy').textContent = 'Hoy, ' + fechaLarga(A.hoy).toLowerCase();
+  const hoyF = A.filas.filter(r => r.f === A.hoy);
+  const ubis = D.ubicaciones.filter(u => u.activo);
+  $('dashLocs').innerHTML = ubis.map(u => {
+    const fs = hoyF.filter(r => r.e.id_ubicacion === u.id);
+    const esper = fs.filter(r => r.laborable).length;
+    const llegaron = fs.filter(r => r.ent).length;
+    const dentro = fs.filter(r => r.ent && !r.sal && !(r.sc && !r.rc)).length;
+    const comida = fs.filter(r => r.sc && !r.rc && !r.sal).length;
+    const salieron = fs.filter(r => r.sal).length;
+    const ret = fs.filter(r => r.retardo).length;
+    const sin = fs.filter(r => r.estado === 'Sin llegar' || (r.estado === 'Falta')).length;
+    const inc = fs.filter(r => r.inc && r.inc !== 'Día inhábil').length;
+    const w = n => esper ? (n / esper * 100) + '%' : '0';
+    const diaHab = fs.some(r => r.laborable) || !fs.length ? '' : ' · Día de descanso';
+    return `<div class="loc"><h3>${esc(u.nombre)}</h3><div class="sched">${u.hora_entrada}–${u.hora_salida}${diaHab}</div>
+      <div class="big">${llegaron}<small> / ${esper}</small></div><div class="big-l">llegaron de los esperados hoy</div>
+      <div class="meter"><i class="c-ok" style="width:${w(llegaron - ret)}"></i><i class="c-late" style="width:${w(ret)}"></i><i class="c-miss" style="width:${w(sin)}"></i></div>
+      <div class="stats"><div><b>${dentro}</b><span>Trabajando</span></div><div><b>${comida}</b><span>En comida</span></div>
+      <div><b>${salieron}</b><span>Salieron</span></div><div><b>${inc}</b><span>Incidencias</span></div></div></div>`;
+  }).join('') || '<div class="empty">Agrega tus ubicaciones para ver el tablero.</div>';
+
+  const sin = hoyF.filter(r => r.estado === 'Sin llegar' || r.estado === 'Falta')
+    .sort((a, b) => a.hor.ent - b.hor.ent);
+  $('dashSin').innerHTML = sin.length ? sin.map(r =>
+    `<li><div>${esc(r.e.nombre)}<br><span>${esc(r.u.nombre)}</span></div><span>${r.estado === 'Falta' ? 'Falta' : 'Entra ' + hmm(r.hor.ent) + ' · ' + hmm(A.ahoraM - r.hor.ent) + ' h tarde'}</span></li>`).join('')
+    : '<li><span>Nadie pendiente por ahora.</span></li>';
+  const ret = hoyF.filter(r => r.retardo).sort((a, b) => b.retardo - a.retardo);
+  $('dashRet').innerHTML = ret.length ? ret.map(r =>
+    `<li><div>${esc(r.e.nombre)}<br><span>${esc(r.u.nombre)}</span></div><span>Llegó ${r.ent} · ${r.retardo} min</span></li>`).join('')
+    : '<li><span>Sin retardos hoy.</span></li>';
+}
+
+function pintarPeriodo(A, desde, hasta) {
+  $('dashRango').textContent = `Del ${fechaCorta(desde)} al ${fechaCorta(hasta)}`;
+  const R = resumir(A);
+  const t = R.reduce((a, s) => { for (const k of ['lab', 'asis', 'falt', 'ret', 'minRet', 'incomp', 'trab', 'diasTrab', 'rech', 'inc']) a[k] = (a[k] || 0) + s[k]; return a; }, {});
+  $('dashKpis').innerHTML = [
+    [pct(t.asis, t.lab), 'Asistencia'], [pct(t.asis - t.ret, t.asis), 'Puntualidad'],
+    [t.falt, 'Faltas'], [t.ret, 'Retardos'], [hmm(t.diasTrab ? t.trab / t.diasTrab : null) || '—', 'Horas promedio por día'],
+    [t.incomp, 'Registros incompletos'], [t.inc, 'Días con incidencia'], [t.rech, 'Intentos rechazados']
+  ].map(([v, l]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join('');
+
+  const porDia = {};
+  for (const r of A.filas) {
+    if (!r.laborable && !r.inc) continue;
+    if (r.inc === 'Día inhábil') continue;
+    const d = porDia[r.f] = porDia[r.f] || { ok: 0, late: 0, miss: 0, inc: 0 };
+    if (r.retardo) d.late++; else if (r.laborable && r.ent) d.ok++;
+    else if (r.estado === 'Falta') d.miss++; else if (r.inc) d.inc++;
+  }
+  const dias = Object.keys(porDia).sort();
+  const max = Math.max(1, ...dias.map(f => { const d = porDia[f]; return d.ok + d.late + d.miss + d.inc; }));
+  $('dashChart').innerHTML = dias.length ? dias.map(f => {
+    const d = porDia[f], h = n => (n / max * 140) + 'px';
+    return `<div class="bar" title="${fechaLarga(f)}: ${d.ok} a tiempo, ${d.late} con retardo, ${d.miss} faltas, ${d.inc} incidencias">
+      <i class="c-inc" style="height:${h(d.inc)}"></i><i class="c-miss" style="height:${h(d.miss)}"></i>
+      <i class="c-late" style="height:${h(d.late)}"></i><i class="c-ok" style="height:${h(d.ok)}"></i>
+      <em>${DIAS[isoDow(f)].charAt(0)} ${+f.slice(8)}</em></div>`;
+  }).join('') : '<div class="empty" style="width:100%">Sin datos en el periodo.</div>';
+
+  const atn = R.filter(s => s.falt || s.ret || s.incomp)
+    .sort((a, b) => (b.falt * 3 + b.ret + b.incomp) - (a.falt * 3 + a.ret + a.incomp)).slice(0, 10);
+  $('dashAtn').innerHTML = atn.length ? atn.map(s => `<tr>
+    <td>${esc(s.e.nombre)}</td><td class="hide-sm">${esc(s.u?.nombre || '')}</td>
+    <td class="num">${s.falt ? `<span class="pill bad">${s.falt}</span>` : 0}</td>
+    <td class="num">${s.ret ? `<span class="pill meal">${s.ret}</span>` : 0}</td>
+    <td class="num hide-sm">${s.minRet}</td><td class="num">${s.incomp}</td><td class="num">${pct(s.asis, s.lab)}</td></tr>`).join('')
+    : '<tr><td colspan="7" class="empty">Sin faltas, retardos ni registros incompletos en el periodo.</td></tr>';
+}
+
+// ════════════════════════════════════════════════════════════
+//  Reportes
+// ════════════════════════════════════════════════════════════
+let repActual = null;   // { tipo, A, D, desde, hasta }
+
+function ajustarFiltrosRep() {
+  const sem = $('rTipo').value === 'semanal';
+  $('rSemanaBox').classList.toggle('hidden', !sem);
+  $('rDesdeBox').classList.toggle('hidden', sem);
+  $('rHastaBox').classList.toggle('hidden', sem);
+}
+
+function prepararReportes() {
+  const hoy = hoyISO();
+  if (!$('rSemana').value) $('rSemana').value = addDias(hoy, -7);
+  if (!$('rDesde').value) { $('rDesde').value = hoy.slice(0, 8) + '01'; $('rHasta').value = hoy; }
+  const sel = $('rUbi'), v = sel.value;
+  sel.innerHTML = '<option value="">Todas</option>' + cacheUbis.map(u => `<option value="${u.id}">${esc(u.nombre)}</option>`).join('');
+  sel.value = v;
+  ajustarFiltrosRep();
+}
+
+async function generarReporte() {
+  const tipo = $('rTipo').value;
+  let desde, hasta;
+  if (tipo === 'semanal') { desde = lunesDe($('rSemana').value || hoyISO()); hasta = addDias(desde, 6); }
+  else { desde = $('rDesde').value; hasta = $('rHasta').value; }
+  if (!desde || !hasta) { toast('Indica el periodo.'); return; }
+  if (hasta < desde) { toast('La fecha final debe ser igual o posterior a la inicial.'); return; }
+  $('repOut').innerHTML = '<div class="empty">Generando…</div>';
+  try {
+    const D = await traerDatos(desde, hasta);
+    const A = analizar(D, desde, hasta, $('rUbi').value);
+    repActual = { tipo, A, D, desde, hasta };
+    if (tipo === 'semanal') repSemanal(A, D, desde, hasta);
+    else if (tipo === 'resumen') repResumen(A, desde, hasta);
+    else repDetalle(A, desde, hasta);
+  } catch (e) { $('repOut').innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+
+function encabezadoRep(titulo, desde, hasta) {
+  return `<div class="rep-title"><div><h2>${titulo}</h2>
+    <div class="rep-sub">Del ${fechaLarga(desde).toLowerCase()} al ${fechaLarga(hasta).toLowerCase()} de ${hasta.slice(0, 4)}</div></div>
+    <div class="rep-org">Arts Nova MutuClub<br>Generado el ${fmtFecha(ahora(), { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div></div>`;
+}
+
+function celdaSemana(r) {
+  if (!r) return '<td class="c" style="color:var(--muted)">—</td>';
+  if (r.ent) {
+    const tags = [];
+    if (r.retardo) tags.push(`<span class="tag late">R ${r.retardo}m</span>`);
+    if (r.anticipada) tags.push(`<span class="tag warn">SA</span>`);
+    if (r.incompleta) tags.push(`<span class="tag warn">Incompleto</span>`);
+    if (r.estado === 'Día extra') tags.push(`<span class="tag inc">Extra</span>`);
+    if (r.manual) tags.push(`<span class="tag inc">M</span>`);
+    return `<td class="c">${r.ent}–${r.sal || '?'}${tags.length ? '<br>' + tags.join(' ') : ''}</td>`;
+  }
+  if (r.estado === 'Falta') return '<td class="c"><span class="tag miss">FALTA</span></td>';
+  if (r.inc) return `<td class="c"><span class="tag inc">${INC_CORTO[r.inc] || r.inc}</span></td>`;
+  if (r.estado === 'Descanso') return '<td class="c" style="color:var(--muted)">—</td>';
+  return '<td class="c"></td>';
+}
+
+function repSemanal(A, D, desde, hasta) {
+  const fechas = rangoFechas(desde, hasta);
+  const idx = {}; A.filas.forEach(r => { idx[r.e.id + '|' + r.f] = r; });
+  const R = resumir(A);
+  const grupos = {};
+  R.forEach(s => { const k = s.u ? s.u.id : 0; (grupos[k] = grupos[k] || []).push(s); });
+  const bloques = Object.keys(grupos).map(k => {
+    const u = A.ubis[k];
+    const filas = grupos[k].sort((a, b) => a.e.nombre.localeCompare(b.e.nombre)).map(s => `<tr>
+      <td>${esc(s.e.nombre)}<br><small style="color:var(--muted)">${esc(s.e.num)}${s.e.hora_entrada ? ' · ' + s.e.hora_entrada + '–' + s.e.hora_salida : ''}</small></td>
+      ${fechas.map(f => celdaSemana(idx[s.e.id + '|' + f])).join('')}
+      <td class="r">${s.asis}</td><td class="r">${s.falt}</td><td class="r">${s.ret}${s.minRet ? ` <small>(${s.minRet}m)</small>` : ''}</td>
+      <td class="r">${hmm(s.trab) || '0:00'}</td><td class="firma"></td></tr>`).join('');
+    return `<div class="rep-block">${encabezadoRep('Reporte semanal de asistencia', desde, hasta)}
+      <div class="rep-loc">${esc(u ? u.nombre : 'Sin ubicación')} ${u ? `<span>· Horario ${u.hora_entrada}–${u.hora_salida}, tolerancia ${u.tolerancia_min} min${u.comida_min ? ', comida ' + u.comida_min + ' min' : ''}</span>` : ''}</div>
+      <div class="table-wrap" style="border:none;border-radius:0"><table class="rep"><thead><tr><th style="text-align:left">Empleado</th>
+      ${fechas.map(f => `<th>${DIAS[isoDow(f)]} ${+f.slice(8)}</th>`).join('')}
+      <th>Asist.</th><th>Faltas</th><th>Retardos</th><th>Horas</th><th>Firma</th></tr></thead><tbody>${filas}</tbody></table></div>
+      <div class="rep-legend">R = retardo (minutos) · SA = salida anticipada · Incompleto = falta registrar salida o regreso de comida · M = incluye captura manual · VAC vacaciones · PER permiso · INC incapacidad · FJ falta justificada · COM comisión · INH día inhábil · — descanso</div></div>`;
+  });
+  $('repOut').innerHTML = `<div class="rep-doc">${bloques.join('') || '<div class="empty">No hay empleados con ubicación asignada.</div>'}</div>`;
+}
+
+function repResumen(A, desde, hasta) {
+  const R = resumir(A).sort((a, b) => (a.u?.nombre || '').localeCompare(b.u?.nombre || '') || a.e.nombre.localeCompare(b.e.nombre));
+  const filas = R.map(s => `<tr><td>${esc(s.e.nombre)}<br><small style="color:var(--muted)">${esc(s.e.num)}</small></td><td>${esc(s.u?.nombre || '')}</td>
+    <td class="r">${s.lab}</td><td class="r">${s.asis}</td><td class="r">${s.falt}</td><td class="r">${s.inc}</td>
+    <td class="r">${s.ret}</td><td class="r">${s.minRet}</td><td class="r">${s.antic}</td><td class="r">${s.incomp}</td>
+    <td class="r">${hmm(s.trab) || '0:00'}</td><td class="r">${hmm(s.diasTrab ? s.trab / s.diasTrab : null) || '—'}</td>
+    <td class="r">${pct(s.asis, s.lab)}</td><td class="r">${pct(s.asis - s.ret, s.asis)}</td><td class="r">${s.rech}</td></tr>`).join('');
+  $('repOut').innerHTML = `<div class="rep-doc">${encabezadoRep('Resumen de asistencia por empleado', desde, hasta)}
+    <div class="table-wrap" style="border:none;border-radius:0"><table class="rep"><thead><tr><th style="text-align:left">Empleado</th><th>Ubicación</th>
+    <th>Días lab.</th><th>Asist.</th><th>Faltas</th><th>Incid.</th><th>Retardos</th><th>Min. ret.</th><th>Sal. antic.</th><th>Incompl.</th>
+    <th>Horas</th><th>Prom./día</th><th>Asistencia</th><th>Puntualidad</th><th>Rechazos</th></tr></thead>
+    <tbody>${filas || '<tr><td colspan="15" class="empty">Sin datos.</td></tr>'}</tbody></table></div>
+    <div class="rep-legend">Días laborables no incluye descansos, días inhábiles ni incidencias. Puntualidad = asistencias sin retardo entre asistencias. Rechazos = intentos de checar fuera de la ubicación o con GPS impreciso.</div></div>`;
+}
+
+function repDetalle(A, desde, hasta) {
+  const filas = A.filas.filter(r => r.estado !== 'Descanso' || r.ent)
+    .sort((a, b) => a.f.localeCompare(b.f) || a.e.nombre.localeCompare(b.e.nombre));
+  const obs = r => [r.retardo ? `Retardo ${r.retardo} min` : '', r.anticipada ? `Salió ${r.anticipada} min antes` : '',
+    r.comidaExc ? `Comida excedida ${r.comidaExc} min` : '', r.incompleta ? 'Registro incompleto' : '', r.manual ? 'Captura manual' : '']
+    .filter(Boolean).join(' · ');
+  $('repOut').innerHTML = `<div class="rep-doc">${encabezadoRep('Detalle diario de asistencia', desde, hasta)}
+    <div class="table-wrap" style="border:none;border-radius:0"><table class="rep"><thead><tr><th>Fecha</th><th style="text-align:left">Empleado</th><th>Ubicación</th><th>Horario</th>
+    <th>Entrada</th><th>Sal. comida</th><th>Reg. comida</th><th>Salida</th><th>Horas</th><th>Estado</th><th style="text-align:left">Observaciones</th></tr></thead>
+    <tbody>${filas.map(r => `<tr><td class="c">${fechaCorta(r.f)}</td><td>${esc(r.e.nombre)}</td><td>${esc(r.u?.nombre || '')}</td>
+      <td class="c">${r.hor ? r.hor.txt : ''}</td><td class="c">${r.ent || ''}</td><td class="c">${r.sc || ''}</td><td class="c">${r.rc || ''}</td>
+      <td class="c">${r.sal || ''}</td><td class="r">${hmm(r.trab)}</td>
+      <td class="c">${r.estado === 'Falta' ? '<span class="tag miss">Falta</span>' : r.estado === 'Retardo' ? '<span class="tag late">Retardo</span>' : esc(r.estado)}</td>
+      <td>${obs(r)}</td></tr>`).join('') || '<tr><td colspan="11" class="empty">Sin datos.</td></tr>'}</tbody></table></div></div>`;
+}
+
+function imprimirReporte() {
+  if (!repActual) { toast('Primero genera un reporte.'); return; }
+  window.print();
+}
+
+function cargarSheetJS() {
+  if (window.XLSX) return Promise.resolve();
+  return new Promise((ok, mal) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = ok; s.onerror = () => mal(new Error('No se pudo cargar el exportador de Excel. Revisa tu conexión.'));
+    document.head.appendChild(s);
+  });
+}
+
+async function exportarExcel() {
+  if (!repActual) { toast('Primero genera un reporte.'); return; }
+  try { await cargarSheetJS(); } catch (e) { toast(e.message); return; }
+  const { A, D, desde, hasta } = repActual;
+  const R = resumir(A);
+  const resumen = R.map(s => ({
+    'Número': s.e.num, 'Empleado': s.e.nombre, 'Ubicación': s.u?.nombre || '', 'Días laborables': s.lab, 'Asistencias': s.asis,
+    'Faltas': s.falt, 'Días con incidencia': s.inc, 'Retardos': s.ret, 'Minutos de retardo': s.minRet, 'Salidas anticipadas': s.antic,
+    'Registros incompletos': s.incomp, 'Horas trabajadas': hmm(s.trab), 'Promedio horas/día': hmm(s.diasTrab ? s.trab / s.diasTrab : null),
+    'Asistencia %': s.lab ? Math.round(s.asis / s.lab * 100) : null, 'Puntualidad %': s.asis ? Math.round((s.asis - s.ret) / s.asis * 100) : null,
+    'Días extra': s.extra, 'Intentos rechazados': s.rech }));
+  const detalle = A.filas.filter(r => r.estado !== 'Descanso' || r.ent).map(r => ({
+    'Fecha': r.f, 'Número': r.e.num, 'Empleado': r.e.nombre, 'Ubicación': r.u?.nombre || '', 'Horario': r.hor ? r.hor.txt : '',
+    'Entrada': r.ent || '', 'Salida a comer': r.sc || '', 'Regreso de comer': r.rc || '', 'Salida': r.sal || '',
+    'Horas trabajadas': hmm(r.trab), 'Estado': r.estado, 'Minutos de retardo': r.retardo || 0,
+    'Salida anticipada (min)': r.anticipada || 0, 'Comida excedida (min)': r.comidaExc || 0,
+    'Incompleto': r.incompleta ? 'Sí' : '', 'Captura manual': r.manual ? 'Sí' : '' }));
+  const nom = Object.fromEntries(D.empleados.map(e => [e.id, e]));
+  const checadas = D.checadas.map(c => ({ 'Fecha': c.f, 'Hora': c.h, 'Número': nom[c.e]?.num, 'Empleado': nom[c.e]?.nombre,
+    'Movimiento': TIPOS[c.t].txt, 'Nota': c.m || '' }));
+  const incid = D.incidencias.map(i => ({ 'Fecha': i.f, 'Tipo': i.tipo, 'Empleado': i.nombre, 'Nota': i.nota || '' }));
+  const wb = XLSX.utils.book_new();
+  const hoja = (rows, name) => { const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{ '': 'Sin datos' }]);
+    ws['!cols'] = Object.keys(rows[0] || { a: 1 }).map(k => ({ wch: Math.max(10, k.length + 2) })); XLSX.utils.book_append_sheet(wb, ws, name); };
+  hoja(resumen, 'Resumen'); hoja(detalle, 'Detalle diario'); hoja(checadas, 'Checadas'); hoja(incid, 'Incidencias');
+  XLSX.writeFile(wb, `Asistencia_${desde}_a_${hasta}.xlsx`);
+}
+
+// ════════════════════════════════════════════════════════════
+//  Incidencias
+// ════════════════════════════════════════════════════════════
+async function cargarIncidencias() {
+  const hoy = hoyISO();
+  if (!$('iDesde').value) { $('iDesde').value = hoy; $('iHasta').value = hoy; }
+  if (!cacheEmps.length) { try { cacheEmps = await rpc('ch_admin_empleados', { p_token: sesion.token }); } catch {} }
+  $('iEmp').innerHTML = '<option value="">Elige al empleado</option>' + cacheEmps.filter(e => e.activo && e.id_ubicacion)
+    .map(e => `<option value="${e.id}">${esc(e.nombre)} (${esc(e.num_empleado)})</option>`).join('');
+  ajustarInc();
+  $('tbInc').innerHTML = '<tr><td colspan="5" class="empty">Cargando…</td></tr>';
+  try {
+    const D = await traerDatos(addDias(hoy, -45), addDias(hoy, 45));
+    const L = D.incidencias.slice().reverse();
+    $('tbInc').innerHTML = L.length ? L.map(i => `<tr><td class="num">${fechaLarga(i.f)}</td>
+      <td><span class="pill ${i.tipo === 'Día inhábil' ? 'gray' : 'meal'}">${esc(i.tipo)}</span></td>
+      <td>${esc(i.nombre)}</td><td class="hide-sm">${esc(i.nota || '')}</td>
+      <td><button class="link" data-del="${i.id}">Quitar</button></td></tr>`).join('')
+      : '<tr><td colspan="5" class="empty">No hay incidencias registradas en los últimos o próximos 45 días.</td></tr>';
+    $('tbInc').querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+      if (!confirm('¿Quitar esta incidencia? Ese día volverá a contar como laborable.')) return;
+      try { await rpc('ch_admin_borrar_incidencia', { p_token: sesion.token, p_id: +b.dataset.del }); toast('Incidencia quitada'); cargarIncidencias(); }
+      catch (e) { toast(e.message); }
+    });
+  } catch (e) { $('tbInc').innerHTML = `<tr><td colspan="5" class="empty">${esc(e.message)}</td></tr>`; }
+}
+function ajustarInc() { $('iEmpBox').classList.toggle('hidden', $('iTipo').value === 'Día inhábil'); }
+async function guardarIncidencia() {
+  $('iMsg').classList.add('hidden');
+  const b = $('iGuardar'); b.disabled = true;
+  try {
+    const r = await rpc('ch_admin_guardar_incidencia', { p_token: sesion.token, p: {
+      tipo: $('iTipo').value, id_empleado: $('iEmp').value, desde: $('iDesde').value, hasta: $('iHasta').value, nota: $('iNota').value } });
+    if (!r.ok) { mostrarErr('iMsg', r.error); return; }
+    toast(`Incidencia registrada (${r.dias} día${r.dias === 1 ? '' : 's'})`); $('iNota').value = ''; cargarIncidencias();
+  } catch (e) { mostrarErr('iMsg', e.message); } finally { b.disabled = false; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  Correcciones en Registros
+// ════════════════════════════════════════════════════════════
+async function formManual() {
+  if (!cacheEmps.length) { try { cacheEmps = await rpc('ch_admin_empleados', { p_token: sesion.token }); } catch {} }
+  abrirModal(`<h2>Captura manual</h2><p class="sub">Para cuando un empleado olvidó checar o tuvo un problema con su celular. Queda marcada como manual en los reportes.</p>
+    <div id="mMsg" class="msg bad hidden"></div>
+    <div class="field"><label for="mEmp">Empleado</label><select id="mEmp"><option value="">Elige al empleado</option>${
+      cacheEmps.filter(e => e.activo).map(e => `<option value="${e.id}">${esc(e.nombre)} (${esc(e.num_empleado)})</option>`).join('')}</select></div>
+    <div class="form-grid">
+      <div class="field"><label for="mFecha">Fecha</label><input type="date" id="mFecha" value="${hoyISO()}" max="${hoyISO()}"></div>
+      <div class="field"><label for="mHora">Hora</label><input type="time" id="mHora"></div>
+    </div>
+    <div class="field"><label for="mTipo">Movimiento</label><select id="mTipo">${Object.keys(TIPOS).map(t => `<option value="${t}">${TIPOS[t].txt}</option>`).join('')}</select></div>
+    <div class="field"><label for="mMot">Motivo</label><input id="mMot" placeholder="Ej. Olvidó checar su salida, confirmado por su jefe"></div>
+    <div class="row2"><button class="btn-sec" id="mCancel">Cancelar</button><button class="btn-main" id="mSave">Guardar</button></div>`);
+  $('mCancel').onclick = cerrarModal;
+  $('mSave').onclick = () => guardar('ch_admin_checada_manual', {
+    id_empleado: $('mEmp').value, fecha: $('mFecha').value, hora: $('mHora').value, tipo: $('mTipo').value, motivo: $('mMot').value
+  }, 'mMsg', 'Registro capturado', cargarRegistros);
+}
+
+function formAnular(id) {
+  const r = cacheRegs.find(x => x.id === id);
+  abrirModal(`<h2>Anular registro</h2><p class="sub">${esc(r.nombre)} · ${TIPOS[r.tipo].txt} del ${fechaCorta(r.fecha)} a las ${r.hora}. El registro no se borra: queda marcado como anulado con tu nombre.</p>
+    <div id="aMsg" class="msg bad hidden"></div>
+    <div class="field"><label for="aMot">Motivo</label><input id="aMot" placeholder="Ej. Checó por error"></div>
+    <div class="row2"><button class="btn-sec" id="mCancel">Cancelar</button><button class="btn-main" id="mSave">Anular</button></div>`);
+  $('mCancel').onclick = cerrarModal;
+  $('mSave').onclick = async () => {
+    const b = $('mSave'); b.disabled = true;
+    try {
+      const x = await rpc('ch_admin_anular_checada', { p_token: sesion.token, p_id: id, p_motivo: $('aMot').value });
+      if (!x.ok) { mostrarErr('aMsg', x.error); return; }
+      cerrarModal(); toast('Registro anulado'); cargarRegistros();
+    } catch (e) { mostrarErr('aMsg', e.message); } finally { if ($('mSave')) b.disabled = false; }
+  };
+}
+
+// ════════════════════════════════════════════════════════════
 //  Eventos
 // ════════════════════════════════════════════════════════════
 $('btnLogin').onclick = login;
@@ -866,6 +1441,15 @@ $('fUbi').onchange = cargarRegistros;
 $('fBuscaEmp').oninput = pintarEmps;
 $('btnNuevoEmp').onclick = () => formEmp(null);
 $('btnNuevaUbi').onclick = () => formUbi(null);
+$('btnManual').onclick = formManual;
+$('rTipo').onchange = ajustarFiltrosRep;
+$('rGenerar').onclick = generarReporte;
+$('rImprimir').onclick = imprimirReporte;
+$('rExcel').onclick = exportarExcel;
+$('rPrev').onclick = () => { $('rSemana').value = addDias(lunesDe($('rSemana').value || hoyISO()), -7); generarReporte(); };
+$('rNext').onclick = () => { $('rSemana').value = addDias(lunesDe($('rSemana').value || hoyISO()), 7); generarReporte(); };
+$('iTipo').onchange = ajustarInc;
+$('iGuardar').onclick = guardarIncidencia;
 $('modal').addEventListener('click', e => { if (e.target.id === 'modal' && !(flujo && flujo.tipo)) cerrarModal(); });
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && sesion && !$('tChecar').classList.contains('hidden') && !flujo) cargarEstado();
