@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1C2B45">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Checador">
+<title>Checador Arts Nova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════════
+   CONFIGURACIÓN — pega aquí los datos de tu proyecto Supabase
+   (Supabase → Project Settings → API)
+   ════════════════════════════════════════════════════════════ */
+</style>
+<script>
+const SUPABASE_URL = 'https://rsjaziurrxtjjftekfbf.supabase.co/rest/v1/';
+const SUPABASE_KEY = 'sb_publishable_HEgIwWCG05S90ImhS8ez5A_lVJgjmPZ';
+</script>
+<style>
+:root {
+  --ink: #1C2B45;
+  --paper: #EEF1F5;
+  --card: #FFFFFF;
+  --line: #D3DAE4;
+  --muted: #5C6A80;
+  --ok: #1D7A52;
+  --ok-bg: #E3F2EA;
+  --meal: #A66A10;
+  --meal-bg: #FBF0DC;
+  --bad: #B3372F;
+  --bad-bg: #FBE6E4;
+  --r-lg: 18px;
+  --r-sm: 8px;
+  --font: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+button, input, select { font-family: inherit; font-size: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid #5B8DEF; outline-offset: 2px; }
+.hidden { display: none !important; }
+
+/* ── Estructura ─────────────────────────────────────── */
+.wrap { max-width: 480px; margin: 0 auto; padding: 20px 18px 40px; }
+.wrap.wide { max-width: 1080px; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 18px;
+}
+.who { min-width: 0; }
+.who b { display: block; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.who span { color: var(--muted); font-size: 14px; }
+.btn-text {
+  background: none; border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 8px 12px; font-size: 14px; color: var(--muted); white-space: nowrap;
+}
+.btn-text:hover { color: var(--ink); border-color: var(--muted); }
+
+/* ── Login ──────────────────────────────────────────── */
+.login { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.login-box { width: 100%; max-width: 360px; }
+.brand { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 6px; }
+.brand-sub { color: var(--muted); margin-bottom: 28px; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+.field input, .field select {
+  width: 100%; padding: 13px 14px; border: 1.5px solid var(--line); border-radius: var(--r-sm);
+  background: var(--card); font-size: 17px;
+}
+.field input:focus, .field select:focus { border-color: var(--ink); outline: none; }
+.field small { display: block; color: var(--muted); font-size: 13px; margin-top: 4px; }
+.btn-main {
+  width: 100%; padding: 15px; border: none; border-radius: var(--r-sm);
+  background: var(--ink); color: #fff; font-weight: 700; font-size: 17px;
+}
+.btn-main:disabled { opacity: .5; cursor: default; }
+.msg { padding: 12px 14px; border-radius: var(--r-sm); font-size: 15px; margin-bottom: 16px; }
+.msg.bad { background: var(--bad-bg); color: var(--bad); }
+.msg.ok { background: var(--ok-bg); color: var(--ok); }
+
+/* ── Reloj ──────────────────────────────────────────── */
+.clock { text-align: center; padding: 18px 0 8px; }
+.clock-time {
+  font-size: clamp(72px, 24vw, 112px); font-weight: 700; line-height: 1;
+  letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+}
+.clock-time .sec { font-size: .32em; letter-spacing: 0; color: var(--muted); margin-left: 4px; vertical-align: .9em; }
+.clock-date { color: var(--muted); margin-top: 8px; font-size: 17px; }
+.place { text-align: center; margin: 6px 0 22px; font-size: 15px; }
+.place b { font-weight: 700; }
+
+/* ── Línea del día ──────────────────────────────────── */
+.day {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: 16px 8px; margin-bottom: 22px; position: relative;
+}
+.day::before {
+  content: ''; position: absolute; left: 12.5%; right: 12.5%; top: 29px;
+  height: 2px; background: var(--line);
+}
+.stop { text-align: center; position: relative; }
+.stop i {
+  display: block; width: 14px; height: 14px; border-radius: 50%; margin: 7px auto 8px;
+  background: var(--card); border: 2px solid var(--line); position: relative;
+}
+.stop.done i { background: var(--ok); border-color: var(--ok); }
+.stop.meal.done i { background: var(--meal); border-color: var(--meal); }
+.stop span { display: block; font-size: 12px; color: var(--muted); }
+.stop b { display: block; font-size: 16px; font-variant-numeric: tabular-nums; min-height: 22px; }
+
+/* ── Botón de checar ────────────────────────────────── */
+.actions { display: grid; gap: 12px; }
+.btn-check {
+  width: 100%; border: none; border-radius: var(--r-lg);
+  padding: 26px 20px; font-size: 22px; font-weight: 700; color: #fff;
+  background: var(--ink); box-shadow: 0 6px 0 #0F1A2E;
+  transition: transform .08s, box-shadow .08s;
+}
+.btn-check:active { transform: translateY(4px); box-shadow: 0 2px 0 #0F1A2E; }
+.btn-check.meal { background: var(--meal); box-shadow: 0 6px 0 #6E4509; }
+.btn-check.meal:active { box-shadow: 0 2px 0 #6E4509; }
+.btn-check.alt {
+  background: var(--card); color: var(--ink); border: 2px solid var(--ink);
+  box-shadow: none; padding: 18px; font-size: 18px;
+}
+.day-done { text-align: center; padding: 22px; background: var(--ok-bg); color: var(--ok); border-radius: var(--r-lg); font-weight: 700; }
+
+.section-title { font-size: 18px; font-weight: 700; margin: 32px 0 10px; }
+.history { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+.h-day { padding: 12px 16px; border-top: 1px solid var(--line); }
+.h-day:first-child { border-top: none; }
+.h-day > b { display: block; font-size: 14px; margin-bottom: 4px; }
+.h-items { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--muted); }
+.h-items strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+.empty { padding: 20px 16px; color: var(--muted); text-align: center; }
+
+/* ── Hoja de captura ────────────────────────────────── */
+.sheet-bg {
+  position: fixed; inset: 0; background: rgba(20, 30, 50, .55); z-index: 50;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.sheet {
+  background: var(--card); width: 100%; max-width: 480px; border-radius: 22px 22px 0 0;
+  padding: 22px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+  max-height: 94vh; overflow-y: auto;
+  animation: up .22s ease-out;
+}
+@media (min-width: 700px) { .sheet-bg { align-items: center; } .sheet { border-radius: 22px; } }
+@keyframes up { from { transform: translateY(30px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } .btn-check { transition: none; } }
+.sheet h2 { font-size: 22px; margin-bottom: 4px; }
+.sheet p.sub { color: var(--muted); margin-bottom: 16px; }
+.steps { list-style: none; margin-bottom: 18px; }
+.steps li { display: flex; gap: 10px; align-items: center; padding: 8px 0; color: var(--muted); }
+.steps li.now { color: var(--ink); font-weight: 700; }
+.steps li.ok { color: var(--ok); }
+.steps li.fail { color: var(--bad); }
+.steps .dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid currentColor; display: grid; place-items: center; font-size: 12px; flex: none; }
+.steps li.ok .dot { background: var(--ok); color: #fff; border-color: var(--ok); }
+.cam {
+  position: relative; width: 100%; aspect-ratio: 1; background: #10182A;
+  border-radius: var(--r-lg); overflow: hidden; margin-bottom: 16px;
+}
+.cam video, .cam img { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
+.cam .ring { position: absolute; inset: 14%; border: 3px dashed rgba(255,255,255,.55); border-radius: 50%; pointer-events: none; }
+.result { text-align: center; padding: 10px 0 6px; }
+.result .big { font-size: 64px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; margin: 8px 0; }
+.result.ok { color: var(--ok); }
+.result.bad { color: var(--bad); }
+.result p { color: var(--ink); margin-top: 8px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-sec { width: 100%; padding: 14px; border-radius: var(--r-sm); border: 1.5px solid var(--line); background: var(--card); font-weight: 700; }
+
+/* ── Administración ─────────────────────────────────── */
+.tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 20px; overflow-x: auto; }
+.tab {
+  background: none; border: none; padding: 12px 16px; font-weight: 700; color: var(--muted);
+  border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
+}
+.tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 16px; }
+.toolbar .field { margin: 0; }
+.toolbar .field input, .toolbar .field select { padding: 10px 12px; font-size: 15px; }
+.btn-add { padding: 11px 16px; border: none; border-radius: var(--r-sm); background: var(--ink); color: #fff; font-weight: 700; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.count { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 14px; }
+.count b { font-size: 16px; }
+.table-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th { text-align: left; font-size: 13px; color: var(--muted); font-weight: 700; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 11px 14px; border-top: 1px solid var(--line); vertical-align: middle; }
+tr:first-child td { border-top: none; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.rej td { background: var(--bad-bg); }
+tr.off td { color: var(--muted); }
+.pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.bad { background: var(--bad-bg); color: var(--bad); }
+.pill.meal { background: var(--meal-bg); color: var(--meal); }
+.pill.gray { background: var(--paper); color: var(--muted); }
+.link { background: none; border: none; color: #2B5CC4; text-decoration: underline; font-size: 14px; padding: 0; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.form-grid .full { grid-column: 1 / -1; }
+.days { display: flex; flex-wrap: wrap; gap: 6px; }
+.days label { display: flex; align-items: center; gap: 4px; border: 1.5px solid var(--line); border-radius: var(--r-sm); padding: 6px 10px; font-size: 14px; cursor: pointer; }
+.days input { width: auto; }
+.days label:has(input:checked) { border-color: var(--ink); background: var(--paper); font-weight: 700; }
+.check-line { display: flex; gap: 8px; align-items: center; font-weight: 700; margin-bottom: 16px; }
+.check-line input { width: 20px; height: 20px; }
+.hint { background: var(--paper); border-radius: var(--r-sm); padding: 10px 12px; font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+.selfie-view { width: 100%; max-width: 320px; border-radius: var(--r-lg); display: block; margin: 0 auto 14px; transform: scaleX(-1); }
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  background: var(--ink); color: #fff; padding: 12px 18px; border-radius: var(--r-sm); z-index: 80; font-size: 15px;
+  max-width: calc(100% - 32px);
+}
+.setup { max-width: 520px; margin: 60px auto; padding: 24px; background: var(--card); border-radius: var(--r-lg); border: 1px solid var(--line); }
+.setup h1 { font-size: 22px; margin-bottom: 10px; }
+.setup p { margin-bottom: 10px; }
+@media (max-width: 560px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .hide-sm { display: none; }
+  td, th { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ Falta configuración ═══ -->
+<div id="vSetup" class="setup hidden">
+  <h1>Falta conectar la app con Supabase</h1>
+  <p>Abre este archivo en un editor de texto y, al inicio, reemplaza <b>TU-PROYECTO</b> y <b>TU_LLAVE_PUBLICA</b> con los datos de tu proyecto.</p>
+  <p>Los encuentras en Supabase → Project Settings → API.</p>
+</div>
+
+<!-- ═══ Login ═══ -->
+<div id="vLogin" class="login hidden">
+  <div class="login-box">
+    <div class="brand">Checador<br>Arts Nova</div>
+    <div class="brand-sub">Registra tu entrada y salida desde tu lugar de trabajo.</div>
+    <div id="loginMsg" class="msg bad hidden"></div>
+    <div class="field">
+      <label for="lNum">Número de empleado</label>
+      <input id="lNum" autocomplete="username" autocapitalize="characters" autocorrect="off" spellcheck="false">
+    </div>
+    <div class="field">
+      <label for="lPin">PIN</label>
+      <input id="lPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="8">
+    </div>
+    <button class="btn-main" id="btnLogin">Entrar</button>
+  </div>
+</div>
+
+<!-- ═══ App ═══ -->
+<div id="vApp" class="hidden">
+  <div class="wrap" id="appWrap">
+    <div class="topbar">
+      <div class="who"><b id="whoName"></b><span id="whoNum"></span></div>
+      <button class="btn-text" id="btnLogout">Cerrar sesión</button>
+    </div>
+
+    <nav class="tabs hidden" id="adminTabs">
+      <button class="tab" data-tab="checar">Checar</button>
+      <button class="tab" data-tab="hoy">Registros</button>
+      <button class="tab" data-tab="empleados">Empleados</button>
+      <button class="tab" data-tab="ubicaciones">Ubicaciones</button>
+    </nav>
+
+    <!-- Checar -->
+    <section id="tChecar">
+      <div class="clock">
+        <div class="clock-time" id="clk">--:--</div>
+        <div class="clock-date" id="clkDate"></div>
+      </div>
+      <div class="place" id="placeLine"></div>
+      <div class="day" id="dayLine"></div>
+      <div class="actions" id="actions"></div>
+      <div class="section-title">Mis registros</div>
+      <div class="history" id="history"><div class="empty">Cargando…</div></div>
+    </section>
+
+    <!-- Registros (admin) -->
+    <section id="tHoy" class="hidden">
+      <div class="toolbar">
+        <div class="field"><label for="fDesde">Desde</label><input type="date" id="fDesde"></div>
+        <div class="field"><label for="fHasta">Hasta</label><input type="date" id="fHasta"></div>
+        <div class="field"><label for="fUbi">Ubicación</label><select id="fUbi"><option value="">Todas</option></select></div>
+        <div class="field"><label for="fVer">Mostrar</label>
+          <select id="fVer"><option value="todas">Todas</option><option value="ok">Solo aceptadas</option><option value="rej">Solo rechazadas</option></select>
+        </div>
+        <button class="btn-add" id="btnFiltrar">Actualizar</button>
+      </div>
+      <div class="counts" id="counts"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fecha</th><th>Hora</th><th>Empleado</th><th class="hide-sm">Ubicación</th><th>Movimiento</th><th>Distancia</th><th>Resultado</th><th></th></tr></thead>
+          <tbody id="tbHoy"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Empleados (admin) -->
+    <section id="tEmp" class="hidden">
+      <div class="toolbar">
+        <div class="field" style="flex:1;min-width:200px"><label for="fBuscaEmp">Buscar</label><input id="fBuscaEmp" placeholder="Nombre o número"></div>
+        <button class="btn-add" id="btnNuevoEmp">Agregar empleado</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Número</th><th>Nombre</th><th>Ubicación</th><th class="hide-sm">Horario</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="tbEmp"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Ubicaciones (admin) -->
+    <section id="tUbi" class="hidden">
+      <div class="toolbar"><button class="btn-add" id="btnNuevaUbi">Agregar ubicación</button></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ubicación</th><th>Horario</th><th class="hide-sm">Días</th><th>Radio</th><th>Empleados</th><th>Coordenadas</th><th></th></tr></thead>
+          <tbody id="tbUbi"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="modal" class="sheet-bg hidden"><div class="sheet" id="sheet"></div></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  Utilidades
+// ════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const TZ = 'America/Mexico_City';
+const TIPOS = {
+  ENTRADA:        { txt: 'Entrada',          btn: 'Registrar entrada',          cls: '' },
+  SALIDA_COMIDA:  { txt: 'Salida a comer',   btn: 'Salir a comer',              cls: 'meal' },
+  REGRESO_COMIDA: { txt: 'Regreso de comer', btn: 'Registrar regreso de comer', cls: 'meal' },
+  SALIDA:         { txt: 'Salida',           btn: 'Registrar salida',           cls: '' }
+};
+const DIAS = ['', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+let sesion = null;          // { token, nombre, rol, num }
+let estado = null;          // respuesta de ch_estado
+let offsetServidor = 0;     // ms: hora servidor − hora del dispositivo
+let cacheUbis = [];
+let cacheEmps = [];
+
+function toast(t) {
+  const el = $('toast'); el.textContent = t; el.classList.remove('hidden');
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.add('hidden'), 3200);
+}
+
+async function rpc(fn, args = {}) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY },
+    body: JSON.stringify(args)
+  });
+  const txt = await r.text();
+  let data; try { data = JSON.parse(txt); } catch { data = txt; }
+  if (!r.ok) {
+    const m = (data && data.message) || txt || ('Error ' + r.status);
+    if (m.includes('SESION_INVALIDA')) { cerrarSesionLocal(); throw new Error('Tu sesión terminó. Vuelve a entrar.'); }
+    if (m.includes('SIN_PERMISO')) throw new Error('No tienes permiso para esta acción.');
+    throw new Error(m);
+  }
+  return data;
+}
+
+function ahora() { return new Date(Date.now() + offsetServidor); }
+function fmtFecha(d, opts) { return new Intl.DateTimeFormat('es-MX', { timeZone: TZ, ...opts }).format(d); }
+function hoyISO() { return fmtFecha(ahora(), { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-'); }
+function fechaLarga(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const t = new Intl.DateTimeFormat('es-MX', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, d)));
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+function fechaCorta(iso) { const [y, m, d] = iso.split('-'); return `${d}/${m}`; }
+function diasTexto(s) { return (s || '').split(',').filter(Boolean).map(n => DIAS[+n]).join(', '); }
+
+// ════════════════════════════════════════════════════════════
+//  Arranque y sesión
+// ════════════════════════════════════════════════════════════
+function mostrar(v) { ['vSetup', 'vLogin', 'vApp'].forEach(x => $(x).classList.toggle('hidden', x !== v)); }
+
+function arrancar() {
+  if (SUPABASE_URL.includes('TU-PROYECTO') || SUPABASE_KEY.includes('TU_LLAVE')) { mostrar('vSetup'); return; }
+  try { sesion = JSON.parse(localStorage.getItem('ch_sesion') || 'null'); } catch { sesion = null; }
+  if (sesion && sesion.token) entrarApp(); else mostrar('vLogin');
+}
+
+async function login() {
+  const num = $('lNum').value.trim(), pin = $('lPin').value.trim();
+  const msg = $('loginMsg'); msg.classList.add('hidden');
+  if (!num || !pin) { msg.textContent = 'Escribe tu número de empleado y tu PIN.'; msg.classList.remove('hidden'); return; }
+  $('btnLogin').disabled = true; $('btnLogin').textContent = 'Entrando…';
+  try {
+    const r = await rpc('ch_login', { p_num: num, p_pin: pin });
+    if (!r.ok) { msg.textContent = r.error; msg.classList.remove('hidden'); return; }
+    sesion = { token: r.token, nombre: r.nombre, rol: r.rol, num: r.num };
+    try { localStorage.setItem('ch_sesion', JSON.stringify(sesion)); } catch {}
+    $('lPin').value = '';
+    entrarApp();
+  } catch (e) {
+    msg.textContent = 'No hay conexión con el servidor. Revisa tu internet e intenta de nuevo.';
+    msg.classList.remove('hidden');
+  } finally {
+    $('btnLogin').disabled = false; $('btnLogin').textContent = 'Entrar';
+  }
+}
+
+function cerrarSesionLocal() {
+  sesion = null; estado = null;
+  try { localStorage.removeItem('ch_sesion'); } catch {}
+  $('modal').classList.add('hidden');
+  mostrar('vLogin');
+}
+async function logout() {
+  if (sesion) rpc('ch_logout', { p_token: sesion.token }).catch(() => {});
+  cerrarSesionLocal();
+}
+
+async function entrarApp() {
+  mostrar('vApp');
+  $('whoName').textContent = sesion.nombre;
+  $('whoNum').textContent = 'Empleado ' + sesion.num;
+  const admin = sesion.rol === 'admin';
+  $('adminTabs').classList.toggle('hidden', !admin);
+  $('appWrap').classList.toggle('wide', admin);
+  await cargarEstado();
+  if (admin) {
+    const conUbi = !!(estado && estado.ubicacion);
+    document.querySelector('.tab[data-tab="checar"]').classList.toggle('hidden', !conUbi);
+    irTab(conUbi ? 'checar' : 'hoy');
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  Vista del empleado
+// ════════════════════════════════════════════════════════════
+async function cargarEstado() {
+  try {
+    estado = await rpc('ch_estado', { p_token: sesion.token });
+    offsetServidor = new Date(estado.servidor).getTime() - Date.now();
+    pintarEstado();
+    cargarHistorial();
+  } catch (e) { if (sesion) toast(e.message); }
+}
+
+function tickReloj() {
+  const d = ahora();
+  const hm = fmtFecha(d, { hour: '2-digit', minute: '2-digit', hour12: false });
+  const s = fmtFecha(d, { second: '2-digit' }).padStart(2, '0');
+  $('clk').innerHTML = `${hm}<span class="sec">${s}</span>`;
+  const f = fmtFecha(d, { weekday: 'long', day: 'numeric', month: 'long' });
+  $('clkDate').textContent = f.charAt(0).toUpperCase() + f.slice(1);
+}
+setInterval(tickReloj, 1000);
+
+function pintarEstado() {
+  if (!estado) return;
+  const u = estado.ubicacion;
+  $('placeLine').innerHTML = u ? `Tu lugar de trabajo: <b>${esc(u.nombre)}</b>` : 'Sin ubicación asignada';
+
+  const hechos = {}; (estado.hoy || []).forEach(c => { hechos[c.tipo] = c.hora; });
+  const paradas = [['ENTRADA', 'Entrada', ''], ['SALIDA_COMIDA', 'Comida', 'meal'], ['REGRESO_COMIDA', 'Regreso', 'meal'], ['SALIDA', 'Salida', '']];
+  $('dayLine').innerHTML = paradas.map(([k, t, c]) =>
+    `<div class="stop ${c} ${hechos[k] ? 'done' : ''}"><i></i><span>${t}</span><b>${hechos[k] || ''}</b></div>`).join('');
+
+  const acc = $('actions');
+  if (!u) {
+    acc.innerHTML = `<div class="msg bad">No tienes una ubicación asignada. Avisa a tu administrador.</div>`; return;
+  }
+  const sig = estado.siguientes || [];
+  if (!sig.length) { acc.innerHTML = `<div class="day-done">Jornada terminada. Registraste tu salida a las ${esc(hechos.SALIDA || '')}.</div>`; return; }
+  acc.innerHTML = sig.map((t, i) =>
+    `<button class="btn-check ${TIPOS[t].cls} ${i > 0 ? 'alt' : ''}" data-tipo="${t}">${TIPOS[t].btn}</button>`).join('');
+  acc.querySelectorAll('button').forEach(b => b.onclick = () => iniciarChecada(b.dataset.tipo));
+}
+
+async function cargarHistorial() {
+  try {
+    const rows = await rpc('ch_mis_checadas', { p_token: sesion.token, p_dias: 14 });
+    if (!rows.length) { $('history').innerHTML = '<div class="empty">Aún no tienes registros.</div>'; return; }
+    const porDia = {};
+    rows.forEach(r => { (porDia[r.fecha] = porDia[r.fecha] || []).push(r); });
+    $('history').innerHTML = Object.keys(porDia).sort().reverse().map(f =>
+      `<div class="h-day"><b>${fechaLarga(f)}</b><div class="h-items">${
+        porDia[f].slice().reverse().map(r => `<span>${TIPOS[r.tipo].txt} <strong>${r.hora}</strong></span>`).join('')
+      }</div></div>`).join('');
+  } catch (e) { $('history').innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  Flujo de checada: GPS → foto → envío
+// ════════════════════════════════════════════════════════════
+let flujo = null;   // { tipo, pos, stream, foto }
+
+function abrirModal(html) { $('sheet').innerHTML = html; $('modal').classList.remove('hidden'); }
+function cerrarModal() {
+  if (flujo && flujo.stream) flujo.stream.getTracks().forEach(t => t.stop());
+  flujo = null; $('modal').classList.add('hidden');
+}
+
+function pasos(actual, fallo) {
+  const lista = [['gps', 'Confirmar tu ubicación'], ['foto', 'Tomar tu foto'], ['env', 'Registrar']];
+  const idx = lista.findIndex(x => x[0] === actual);
+  return `<ul class="steps">${lista.map(([k, t], i) => {
+    const cls = i < idx ? 'ok' : i === idx ? (fallo ? 'fail' : 'now') : '';
+    return `<li class="${cls}"><span class="dot">${i < idx ? '✓' : i + 1}</span>${t}</li>`;
+  }).join('')}</ul>`;
+}
+
+function distanciaLocal(a, b, c, d) {
+  const R = 6371000, r = x => x * Math.PI / 180;
+  const h = Math.sin(r(c - a) / 2) ** 2 + Math.cos(r(a)) * Math.cos(r(c)) * Math.sin(r(d - b) / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+function iniciarChecada(tipo) {
+  flujo = { tipo };
+  abrirModal(`<h2>${TIPOS[tipo].txt}</h2><p class="sub">Mantén la app abierta unos segundos.</p>${pasos('gps')}
+    <div class="hint">Buscando tu ubicación…</div>
+    <button class="btn-sec" id="mCancel">Cancelar</button>`);
+  $('mCancel').onclick = cerrarModal;
+
+  if (!navigator.geolocation) { errorGps('Este dispositivo no permite obtener la ubicación.'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    if (!flujo) return;
+    flujo.pos = { lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy };
+    const u = estado.ubicacion;
+    if (u && u.lat != null) {
+      const d = distanciaLocal(u.lat, u.lng, flujo.pos.lat, flujo.pos.lng);
+      if (d > u.radio_m) {
+        errorGps(`Estás a ${Math.round(d)} m de ${u.nombre}. Solo puedes registrar dentro de ${u.radio_m} m.`, true); return;
+      }
+    }
+    pasoFoto();
+  }, err => {
+    const m = err.code === 1
+      ? 'La app no tiene permiso para usar tu ubicación. Actívalo en la configuración del navegador (permiso de Ubicación para este sitio) y vuelve a intentar.'
+      : err.code === 3 ? 'El GPS tardó demasiado en responder. Acércate a una ventana e intenta de nuevo.'
+      : 'No se pudo obtener tu ubicación. Revisa que el GPS esté encendido.';
+    errorGps(m, true);
+  }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+}
+
+function errorGps(m, reintentar) {
+  abrirModal(`<h2>No se pudo confirmar tu ubicación</h2>${pasos('gps', true)}
+    <div class="msg bad">${esc(m)}</div>
+    <div class="row2"><button class="btn-sec" id="mCancel">Cerrar</button>
+    ${reintentar ? '<button class="btn-main" id="mRetry">Intentar de nuevo</button>' : ''}</div>`);
+  $('mCancel').onclick = cerrarModal;
+  const t = flujo && flujo.tipo;
+  if ($('mRetry')) $('mRetry').onclick = () => iniciarChecada(t);
+}
+
+async function pasoFoto() {
+  abrirModal(`<h2>${TIPOS[flujo.tipo].txt}</h2><p class="sub">Ubicación confirmada. Ahora tu foto.</p>${pasos('foto')}
+    <div class="cam"><video id="vid" playsinline muted autoplay></video><div class="ring"></div></div>
+    <div class="row2"><button class="btn-sec" id="mCancel">Cancelar</button><button class="btn-main" id="mShot" disabled>Tomar foto</button></div>`);
+  $('mCancel').onclick = cerrarModal;
+  try {
+    flujo.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } }, audio: false });
+    const v = $('vid'); v.srcObject = flujo.stream; await v.play().catch(() => {});
+    $('mShot').disabled = false;
+    $('mShot').onclick = () => tomarFoto(v);
+  } catch (e) {
+    abrirModal(`<h2>No se pudo abrir la cámara</h2>${pasos('foto', true)}
+      <div class="msg bad">La app necesita permiso para usar la cámara frontal. Actívalo en la configuración del navegador y vuelve a intentar.</div>
+      <button class="btn-sec" id="mCancel">Cerrar</button>`);
+    $('mCancel').onclick = cerrarModal;
+  }
+}
+
+function tomarFoto(v) {
+  const lado = Math.min(v.videoWidth, v.videoHeight);
+  if (!lado) { toast('La cámara aún no está lista.'); return; }
+  const c = document.createElement('canvas'); c.width = c.height = 240;
+  c.getContext('2d').drawImage(v, (v.videoWidth - lado) / 2, (v.videoHeight - lado) / 2, lado, lado, 0, 0, 240, 240);
+  flujo.foto = c.toDataURL('image/jpeg', 0.6);
+  flujo.stream.getTracks().forEach(t => t.stop()); flujo.stream = null;
+  enviar();
+}
+
+async function enviar() {
+  abrirModal(`<h2>${TIPOS[flujo.tipo].txt}</h2><p class="sub">Registrando…</p>${pasos('env')}
+    <div class="cam"><img src="${flujo.foto}" alt="Tu foto"></div>`);
+  const f = flujo;
+  try {
+    const r = await rpc('ch_registrar_checada', {
+      p_token: sesion.token, p_tipo: f.tipo, p_lat: f.pos.lat, p_lng: f.pos.lng,
+      p_precision: f.pos.acc, p_selfie: f.foto, p_dispositivo: navigator.userAgent
+    });
+    if (r.ok) {
+      abrirModal(`<div class="result ok"><div>${TIPOS[r.tipo].txt} registrada</div><div class="big">${r.hora}</div>
+        <p>${esc(estado.ubicacion.nombre)}</p></div><button class="btn-main" id="mOk" style="margin-top:18px">Listo</button>`);
+    } else {
+      abrirModal(`<div class="result bad"><div>No se registró</div></div><div class="msg bad" style="margin-top:12px">${esc(r.error)}</div>
+        <button class="btn-main" id="mOk">Entendido</button>`);
+    }
+  } catch (e) {
+    abrirModal(`<div class="result bad"><div>No se registró</div></div>
+      <div class="msg bad" style="margin-top:12px">No hay conexión con el servidor. Revisa tu internet e intenta de nuevo.</div>
+      <button class="btn-main" id="mOk">Entendido</button>`);
+  }
+  $('mOk').onclick = () => { cerrarModal(); cargarEstado(); };
+}
+
+// ════════════════════════════════════════════════════════════
+//  Administración
+// ════════════════════════════════════════════════════════════
+function irTab(t) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  $('tChecar').classList.toggle('hidden', t !== 'checar');
+  $('tHoy').classList.toggle('hidden', t !== 'hoy');
+  $('tEmp').classList.toggle('hidden', t !== 'empleados');
+  $('tUbi').classList.toggle('hidden', t !== 'ubicaciones');
+  if (t === 'checar') cargarEstado();
+  if (t === 'hoy') { if (!$('fDesde').value) { $('fDesde').value = $('fHasta').value = hoyISO(); } cargarUbis().then(cargarRegistros); }
+  if (t === 'empleados') cargarUbis().then(cargarEmps);
+  if (t === 'ubicaciones') cargarUbis().then(pintarUbis);
+}
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => irTab(b.dataset.tab));
+
+async function cargarUbis() {
+  try {
+    cacheUbis = await rpc('ch_admin_ubicaciones', { p_token: sesion.token });
+    const sel = $('fUbi'), v = sel.value;
+    sel.innerHTML = '<option value="">Todas</option>' + cacheUbis.map(u => `<option value="${u.id}">${esc(u.nombre)}</option>`).join('');
+    sel.value = v;
+  } catch (e) { toast(e.message); }
+}
+
+// ── Registros ──
+let cacheRegs = [];
+async function cargarRegistros() {
+  const d = $('fDesde').value, h = $('fHasta').value;
+  if (!d || !h) return;
+  if (h < d) { toast('La fecha final debe ser igual o posterior a la inicial.'); return; }
+  $('tbHoy').innerHTML = '<tr><td colspan="8" class="empty">Cargando…</td></tr>';
+  try {
+    cacheRegs = await rpc('ch_admin_checadas', { p_token: sesion.token, p_desde: d, p_hasta: h, p_ubicacion: $('fUbi').value ? +$('fUbi').value : null });
+    pintarRegistros();
+  } catch (e) { $('tbHoy').innerHTML = `<tr><td colspan="8" class="empty">${esc(e.message)}</td></tr>`; }
+}
+
+function pintarRegistros() {
+  const ver = $('fVer').value;
+  const rows = cacheRegs.filter(r => ver === 'todas' || (ver === 'ok' ? r.aceptada : !r.aceptada));
+  const ok = cacheRegs.filter(r => r.aceptada);
+  const personas = new Set(ok.filter(r => r.tipo === 'ENTRADA').map(r => r.num + r.fecha));
+  const rech = cacheRegs.length - ok.length;
+  $('counts').innerHTML = `
+    <span class="count"><b>${personas.size}</b> entradas registradas</span>
+    <span class="count"><b>${ok.length}</b> movimientos aceptados</span>
+    <span class="count" ${rech ? 'style="border-color:var(--bad);color:var(--bad)"' : ''}><b>${rech}</b> intentos rechazados</span>`;
+  if (!rows.length) { $('tbHoy').innerHTML = '<tr><td colspan="8" class="empty">No hay registros en este periodo.</td></tr>'; return; }
+  $('tbHoy').innerHTML = rows.map(r => `
+    <tr class="${r.aceptada ? '' : 'rej'}">
+      <td class="num">${fechaCorta(r.fecha)}</td>
+      <td class="num">${r.hora}</td>
+      <td>${esc(r.nombre)}<br><small style="color:var(--muted)">${esc(r.num)}</small></td>
+      <td class="hide-sm">${esc(r.ubicacion || '')}</td>
+      <td><span class="pill ${TIPOS[r.tipo].cls === 'meal' ? 'meal' : 'gray'}">${TIPOS[r.tipo].txt}</span></td>
+      <td class="num">${r.distancia_m ?? '—'} m<br><small style="color:var(--muted)">±${r.precision_m ?? '?'} m</small></td>
+      <td>${r.aceptada ? '<span class="pill ok">Aceptada</span>' : `<span class="pill bad">${esc(r.motivo || 'Rechazada')}</span>`}</td>
+      <td style="white-space:nowrap">
+        ${r.foto ? `<button class="link" data-foto="${r.id}">Foto</button> ` : ''}
+        ${r.lat != null ? `<a class="link" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${r.lat},${r.lng}">Mapa</a>` : ''}
+      </td>
+    </tr>`).join('');
+  $('tbHoy').querySelectorAll('[data-foto]').forEach(b => b.onclick = () => verFoto(+b.dataset.foto));
+}
+
+async function verFoto(id) {
+  const r = cacheRegs.find(x => x.id === id);
+  abrirModal(`<h2>${esc(r.nombre)}</h2><p class="sub">${TIPOS[r.tipo].txt} · ${fechaCorta(r.fecha)} a las ${r.hora}</p>
+    <div class="empty" id="fotoBox">Cargando foto…</div><button class="btn-sec" id="mCancel">Cerrar</button>`);
+  $('mCancel').onclick = cerrarModal;
+  try {
+    const f = await rpc('ch_admin_selfie', { p_token: sesion.token, p_id: id });
+    $('fotoBox').outerHTML = f.imagen ? `<img class="selfie-view" src="${f.imagen}" alt="Foto de ${esc(r.nombre)}">` : '<div class="empty">La foto ya fue eliminada (más de 90 días).</div>';
+  } catch (e) { $('fotoBox').textContent = e.message; }
+}
+
+// ── Empleados ──
+async function cargarEmps() {
+  try { cacheEmps = await rpc('ch_admin_empleados', { p_token: sesion.token }); pintarEmps(); }
+  catch (e) { $('tbEmp').innerHTML = `<tr><td colspan="6" class="empty">${esc(e.message)}</td></tr>`; }
+}
+function pintarEmps() {
+  const q = $('fBuscaEmp').value.trim().toUpperCase();
+  const rows = cacheEmps.filter(e => !q || e.nombre.toUpperCase().includes(q) || e.num_empleado.includes(q));
+  if (!rows.length) { $('tbEmp').innerHTML = '<tr><td colspan="6" class="empty">No hay empleados. Agrega el primero con el botón de arriba.</td></tr>'; return; }
+  $('tbEmp').innerHTML = rows.map(e => {
+    const esp = e.hora_entrada ? `${e.hora_entrada}–${e.hora_salida} <span class="pill meal">Especial</span>` : '<span style="color:var(--muted)">El de su ubicación</span>';
+    const est = !e.activo ? '<span class="pill gray">Inactivo</span>' : e.bloqueado ? '<span class="pill bad">Bloqueado 15 min</span>' : '<span class="pill ok">Activo</span>';
+    return `<tr class="${e.activo ? '' : 'off'}">
+      <td class="num">${esc(e.num_empleado)}</td>
+      <td>${esc(e.nombre)}${e.rol === 'admin' ? ' <span class="pill gray">Admin</span>' : ''}</td>
+      <td>${esc(e.ubicacion || 'Sin asignar')}</td>
+      <td class="hide-sm">${esp}</td>
+      <td>${est}</td>
+      <td><button class="link" data-emp="${e.id}">Editar</button></td></tr>`;
+  }).join('');
+  $('tbEmp').querySelectorAll('[data-emp]').forEach(b => b.onclick = () => formEmp(cacheEmps.find(x => x.id === +b.dataset.emp)));
+}
+
+function checksDias(sel, name) {
+  const set = new Set((sel || '').split(',').filter(Boolean));
+  return `<div class="days">${[1,2,3,4,5,6,7].map(n =>
+    `<label><input type="checkbox" name="${name}" value="${n}" ${set.has(String(n)) ? 'checked' : ''}>${DIAS[n]}</label>`).join('')}</div>`;
+}
+function leerDias(name) { return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(i => i.value).join(','); }
+
+function formEmp(e) {
+  const nuevo = !e; e = e || { activo: true, rol: 'empleado' };
+  const esp = !!e.hora_entrada;
+  abrirModal(`<h2>${nuevo ? 'Agregar empleado' : 'Editar empleado'}</h2><p class="sub">${nuevo ? 'El empleado entrará con su número y su PIN.' : esc(e.nombre)}</p>
+    <div id="eMsg" class="msg bad hidden"></div>
+    <div class="form-grid">
+      <div class="field"><label for="eNum">Número de empleado</label><input id="eNum" value="${esc(e.num_empleado || '')}" autocapitalize="characters"></div>
+      <div class="field"><label for="ePin">${nuevo ? 'PIN' : 'PIN nuevo'}</label><input id="ePin" inputmode="numeric" maxlength="8" placeholder="${nuevo ? '4 a 8 dígitos' : 'Déjalo vacío para no cambiarlo'}"></div>
+      <div class="field full"><label for="eNom">Nombre completo</label><input id="eNom" value="${esc(e.nombre || '')}"></div>
+      <div class="field"><label for="eUbi">Ubicación asignada</label><select id="eUbi"><option value="">Sin asignar</option>${
+        cacheUbis.map(u => `<option value="${u.id}" ${u.id === e.id_ubicacion ? 'selected' : ''}>${esc(u.nombre)}</option>`).join('')}</select></div>
+      <div class="field"><label for="eRol">Tipo de acceso</label><select id="eRol">
+        <option value="empleado" ${e.rol === 'empleado' ? 'selected' : ''}>Empleado</option>
+        <option value="admin" ${e.rol === 'admin' ? 'selected' : ''}>Administrador</option></select></div>
+    </div>
+    <label class="check-line"><input type="checkbox" id="eEsp" ${esp ? 'checked' : ''}> Tiene un horario distinto al de su ubicación</label>
+    <div id="eEspBox" class="${esp ? '' : 'hidden'}">
+      <div class="form-grid">
+        <div class="field"><label for="eHe">Entrada</label><input type="time" id="eHe" value="${e.hora_entrada || ''}"></div>
+        <div class="field"><label for="eHs">Salida</label><input type="time" id="eHs" value="${e.hora_salida || ''}"></div>
+      </div>
+      <div class="field"><label>Días que trabaja</label>${checksDias(e.dias, 'eDias')}</div>
+    </div>
+    <label class="check-line"><input type="checkbox" id="eAct" ${e.activo ? 'checked' : ''}> Activo (puede entrar y checar)</label>
+    <div class="row2"><button class="btn-sec" id="mCancel">Cancelar</button><button class="btn-main" id="mSave">Guardar</button></div>`);
+  $('mCancel').onclick = cerrarModal;
+  $('eEsp').onchange = () => $('eEspBox').classList.toggle('hidden', !$('eEsp').checked);
+  $('mSave').onclick = async () => {
+    const esp = $('eEsp').checked;
+    if (esp && (!$('eHe').value || !$('eHs').value)) { mostrarErr('eMsg', 'Indica la hora de entrada y de salida del horario especial.'); return; }
+    const p = {
+      id: e.id || '', num_empleado: $('eNum').value, pin: $('ePin').value, nombre: $('eNom').value,
+      id_ubicacion: $('eUbi').value, rol: $('eRol').value, activo: $('eAct').checked,
+      hora_entrada: esp ? $('eHe').value : '', hora_salida: esp ? $('eHs').value : '', dias: esp ? leerDias('eDias') : ''
+    };
+    await guardar('ch_admin_guardar_empleado', p, 'eMsg', 'Empleado guardado', () => cargarEmps());
+  };
+}
+
+function mostrarErr(id, t) { const m = $(id); m.textContent = t; m.classList.remove('hidden'); }
+async function guardar(fn, p, msgId, ok, luego) {
+  const b = $('mSave'); b.disabled = true; b.textContent = 'Guardando…';
+  try {
+    const r = await rpc(fn, { p_token: sesion.token, p });
+    if (!r.ok) { mostrarErr(msgId, r.error); return; }
+    cerrarModal(); toast(ok); luego && luego();
+  } catch (e) { mostrarErr(msgId, e.message); }
+  finally { if ($('mSave')) { $('mSave').disabled = false; $('mSave').textContent = 'Guardar'; } }
+}
+
+// ── Ubicaciones ──
+function pintarUbis() {
+  if (!cacheUbis.length) { $('tbUbi').innerHTML = '<tr><td colspan="7" class="empty">Aún no hay ubicaciones. Agrega tus 3 lugares de trabajo con el botón de arriba.</td></tr>'; return; }
+  $('tbUbi').innerHTML = cacheUbis.map(u => `
+    <tr class="${u.activo ? '' : 'off'}">
+      <td><b>${esc(u.nombre)}</b>${u.direccion ? `<br><small style="color:var(--muted)">${esc(u.direccion)}</small>` : ''}</td>
+      <td class="num">${u.hora_entrada}–${u.hora_salida}${u.comida_min ? `<br><small style="color:var(--muted)">${u.comida_min} min comida</small>` : ''}</td>
+      <td class="hide-sm">${diasTexto(u.dias)}</td>
+      <td class="num">${u.radio_m} m</td>
+      <td class="num">${u.empleados}</td>
+      <td>${u.lat != null ? `<a class="link" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${u.lat},${u.lng}">Ver en mapa</a>` : '<span class="pill bad">Sin coordenadas</span>'}</td>
+      <td><button class="link" data-ubi="${u.id}">Editar</button></td>
+    </tr>`).join('');
+  $('tbUbi').querySelectorAll('[data-ubi]').forEach(b => b.onclick = () => formUbi(cacheUbis.find(x => x.id === +b.dataset.ubi)));
+}
+
+function formUbi(u) {
+  const nuevo = !u; u = u || { radio_m: 100, hora_entrada: '09:00', hora_salida: '16:30', comida_min: 0, dias: '1,2,3,4,5', tolerancia_min: 0, activo: true };
+  abrirModal(`<h2>${nuevo ? 'Agregar ubicación' : 'Editar ubicación'}</h2><p class="sub">Los empleados solo podrán checar dentro del radio que indiques.</p>
+    <div id="uMsg" class="msg bad hidden"></div>
+    <div class="field"><label for="uNom">Nombre</label><input id="uNom" value="${esc(u.nombre || '')}" placeholder="Ej. Oficina Huerta Baeza"></div>
+    <div class="field"><label for="uDir">Dirección (opcional)</label><input id="uDir" value="${esc(u.direccion || '')}"></div>
+    <div class="hint">Para las coordenadas, lo más fácil es estar físicamente en el lugar y tocar <b>Usar mi ubicación actual</b>. También puedes copiarlas de Google Maps: mantén presionado el punto y copia los dos números.</div>
+    <div class="form-grid">
+      <div class="field"><label for="uLat">Latitud</label><input id="uLat" inputmode="decimal" value="${u.lat ?? ''}" placeholder="20.6597"></div>
+      <div class="field"><label for="uLng">Longitud</label><input id="uLng" inputmode="decimal" value="${u.lng ?? ''}" placeholder="-103.3496"></div>
+    </div>
+    <button class="btn-sec" id="uGps" style="margin-bottom:16px">Usar mi ubicación actual</button>
+    <div class="form-grid">
+      <div class="field"><label for="uRad">Radio permitido (metros)</label><input id="uRad" type="number" min="30" value="${u.radio_m}"><small>Recomendado: 80 a 150 m.</small></div>
+      <div class="field"><label for="uCom">Minutos de comida</label><input id="uCom" type="number" min="0" value="${u.comida_min}"><small>0 si no aplica.</small></div>
+      <div class="field"><label for="uHe">Hora de entrada</label><input id="uHe" type="time" value="${u.hora_entrada}"></div>
+      <div class="field"><label for="uHs">Hora de salida</label><input id="uHs" type="time" value="${u.hora_salida}"></div>
+      <div class="field"><label for="uTol">Tolerancia de retardo (min)</label><input id="uTol" type="number" min="0" value="${u.tolerancia_min}"></div>
+    </div>
+    <div class="field"><label>Días laborales</label>${checksDias(u.dias, 'uDias')}</div>
+    <label class="check-line"><input type="checkbox" id="uAct" ${u.activo ? 'checked' : ''}> Ubicación activa</label>
+    <div class="row2"><button class="btn-sec" id="mCancel">Cancelar</button><button class="btn-main" id="mSave">Guardar</button></div>`);
+  $('mCancel').onclick = cerrarModal;
+  $('uGps').onclick = () => {
+    $('uGps').textContent = 'Obteniendo ubicación…';
+    navigator.geolocation.getCurrentPosition(p => {
+      $('uLat').value = p.coords.latitude.toFixed(6); $('uLng').value = p.coords.longitude.toFixed(6);
+      $('uGps').textContent = `Ubicación capturada (±${Math.round(p.coords.accuracy)} m)`;
+    }, () => { $('uGps').textContent = 'Usar mi ubicación actual'; mostrarErr('uMsg', 'No se pudo obtener la ubicación. Revisa el permiso de ubicación del navegador.'); },
+    { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+  };
+  $('mSave').onclick = async () => {
+    const lat = $('uLat').value.trim(), lng = $('uLng').value.trim();
+    if ((lat && isNaN(+lat)) || (lng && isNaN(+lng))) { mostrarErr('uMsg', 'Las coordenadas deben ser números, por ejemplo 20.6597 y -103.3496.'); return; }
+    if (!leerDias('uDias')) { mostrarErr('uMsg', 'Marca al menos un día laboral.'); return; }
+    const p = {
+      id: u.id || '', nombre: $('uNom').value, direccion: $('uDir').value, lat, lng,
+      radio_m: $('uRad').value, comida_min: $('uCom').value, hora_entrada: $('uHe').value, hora_salida: $('uHs').value,
+      tolerancia_min: $('uTol').value, dias: leerDias('uDias'), activo: $('uAct').checked
+    };
+    await guardar('ch_admin_guardar_ubicacion', p, 'uMsg', 'Ubicación guardada', () => cargarUbis().then(pintarUbis));
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+//  Eventos
+// ════════════════════════════════════════════════════════════
+$('btnLogin').onclick = login;
+$('lNum').addEventListener('keydown', e => { if (e.key === 'Enter') $('lPin').focus(); });
+$('lPin').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+$('btnLogout').onclick = logout;
+$('btnFiltrar').onclick = cargarRegistros;
+$('fVer').onchange = pintarRegistros;
+$('fUbi').onchange = cargarRegistros;
+$('fBuscaEmp').oninput = pintarEmps;
+$('btnNuevoEmp').onclick = () => formEmp(null);
+$('btnNuevaUbi').onclick = () => formUbi(null);
+$('modal').addEventListener('click', e => { if (e.target.id === 'modal' && !(flujo && flujo.tipo)) cerrarModal(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && sesion && !$('tChecar').classList.contains('hidden') && !flujo) cargarEstado();
+});
+
+tickReloj();
+arrancar();
+</script>
+</body>
+</html>
